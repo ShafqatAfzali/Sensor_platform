@@ -5,13 +5,16 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
-../Application/myapp.c 
+../Application/myapp.c \
+../Application/print.c 
 
 OBJS += \
-./Application/myapp.o 
+./Application/myapp.o \
+./Application/print.o 
 
 C_DEPS += \
-./Application/myapp.d 
+./Application/myapp.d \
+./Application/print.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes
@@ -21,7 +24,7 @@ Application/%.o Application/%.su Application/%.cyclo: ../Application/%.c Applica
 clean: clean-Application
 
 clean-Application:
-	-$(RM) ./Application/myapp.cyclo ./Application/myapp.d ./Application/myapp.o ./Application/myapp.su
+	-$(RM) ./Application/myapp.cyclo ./Application/myapp.d ./Application/myapp.o ./Application/myapp.su ./Application/print.cyclo ./Application/print.d ./Application/print.o ./Application/print.su
 
 .PHONY: clean-Application
 

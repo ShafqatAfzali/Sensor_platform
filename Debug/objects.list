@@ -1,4 +1,5 @@
 "./Application/myapp.o"
+"./Application/print.o"
 "./Core/Src/gpio.o"
 "./Core/Src/main.o"
 "./Core/Src/stm32f4xx_hal_msp.o"
