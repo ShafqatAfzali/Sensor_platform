@@ -1,0 +1,2 @@
+../Application/i2c_com.c:5:6:I2C_send	1
+../Application/i2c_com.c:9:10:I2C_recieve	1

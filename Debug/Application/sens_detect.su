@@ -1,0 +1,2 @@
+../Application/sens_detect.c:12:6:detect_thread_func	16	static
+../Application/sens_detect.c:29:6:detect_INIT	48	static
