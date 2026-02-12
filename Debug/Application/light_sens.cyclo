@@ -1,0 +1,3 @@
+../Application/light_sens.c:10:6:light_sens_config	1
+../Application/light_sens.c:14:6:light_sens_thread_func	1
+../Application/light_sens.c:21:6:light_sens_INIT	1

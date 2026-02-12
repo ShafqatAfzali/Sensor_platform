@@ -1,4 +1,5 @@
 "./Application/i2c_com.o"
+"./Application/light_sens.o"
 "./Application/myapp.o"
 "./Application/print.o"
 "./Application/sens_detect.o"
