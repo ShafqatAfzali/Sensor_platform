@@ -40,6 +40,7 @@ void detect_thread_func(){
 				    if (detected_status == HAL_OK){
 				        print("device %s is alive", sens_obj_arr[i].sensor_name);
 		    			osEventFlagsSet(sensors_flag_id, sens_obj_arr[i].flagg);
+		    			osMutexRelease(I2C_mutex_id);
 				    } else {
 		    			osEventFlagsSet(sensors_flag_id, searching_flagg);
 
