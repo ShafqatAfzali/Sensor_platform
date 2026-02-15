@@ -14,7 +14,7 @@ typedef struct{
 
 static sensor_arr sens_obj_arr[3]={
 		{"pressure sensor", 0x77,0x01},
-		{"light sensor", 0x20,0x02},
+		{"light sensor", 0x10,0x02},
 		{"accelerometer", 0x1C,0x04}};
 
 #define searching_flagg 0x8
@@ -22,25 +22,37 @@ static sensor_arr sens_obj_arr[3]={
 HAL_StatusTypeDef detected_status;
 osThreadId_t detect_thread_id;
 osEventFlagsId_t sensors_flag_id;
+osMutexId_t I2C_mutex_id;
+osStatus_t mutex_status;
+
 
 void detect_thread_func(){
 
 	while(true){
 
-		for (int i=0; i<3; i++){
-			detected_status = HAL_I2C_IsDeviceReady(&hi2c1, sens_obj_arr[i].sensor_addr << 1, 2, 100);
+		mutex_status = osMutexAcquire(I2C_mutex_id, osWaitForever);
 
-			    if (detected_status == HAL_OK){
-			        print("device %i is alive", i);
-	    			osEventFlagsSet(sensors_flag_id, sens_obj_arr[i].flagg);
-			    } else {
-	    			osEventFlagsSet(sensors_flag_id, searching_flagg);
+		if(mutex_status == osOK){
 
-			    }
+			for (int i=0; i<3; i++){
+				detected_status = HAL_I2C_IsDeviceReady(&hi2c1, sens_obj_arr[i].sensor_addr << 1, 2, 100);
 
-			osDelay(500);
+				    if (detected_status == HAL_OK){
+				        print("device %s is alive", sens_obj_arr[i].sensor_name);
+		    			osEventFlagsSet(sensors_flag_id, sens_obj_arr[i].flagg);
+				    } else {
+		    			osEventFlagsSet(sensors_flag_id, searching_flagg);
 
+				    }
+
+				osDelay(500);
+
+			}
+
+		} else {
+			print("i2c mutex failed");
 		}
+
 	}
 }
 
@@ -57,8 +69,14 @@ void detect_INIT(){
 
     sensors_flag_id = osEventFlagsNew(NULL);
 
+    I2C_mutex_id = osMutexNew(NULL);
+
 }
 
-osEventFlagsId_t get_event_flag_id(void) {
+osEventFlagsId_t get_flag_id() {
     return sensors_flag_id;
+}
+
+osMutexId_t get_i2c_mutex_id() {
+    return I2C_mutex_id;
 }

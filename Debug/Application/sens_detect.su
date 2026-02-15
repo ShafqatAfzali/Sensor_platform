@@ -1,3 +1,4 @@
-../Application/sens_detect.c:26:6:detect_thread_func	16	static
-../Application/sens_detect.c:48:6:detect_INIT	48	static
-../Application/sens_detect.c:62:18:get_event_flag_id	4	static
+../Application/sens_detect.c:29:6:detect_thread_func	16	static
+../Application/sens_detect.c:60:6:detect_INIT	48	static
+../Application/sens_detect.c:76:18:get_flag_id	4	static
+../Application/sens_detect.c:80:13:get_i2c_mutex_id	4	static
