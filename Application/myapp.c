@@ -4,11 +4,14 @@
 #include <string.h>
 #include "usart.h"
 #include "print.h"
+#include "sens_detect.h"
+#include "light_sens.h"
 
 
-void myapp(int i){
+void myapp(){
 
-	HAL_GPIO_TogglePin(Test_LED_GPIO_Port,Test_LED_Pin);
-	HAL_Delay(500);
-	print("this is the %i print\n", i);
+	print("starting process ....\n");
+
+	detect_INIT();
+	light_sens_INIT();
 }

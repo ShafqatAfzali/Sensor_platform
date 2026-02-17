@@ -38,10 +38,11 @@ void detect_thread_func(){
 				detected_status = HAL_I2C_IsDeviceReady(&hi2c1, sens_obj_arr[i].sensor_addr << 1, 2, 100);
 
 				    if (detected_status == HAL_OK){
-				        print("device %s is alive", sens_obj_arr[i].sensor_name);
+				        print("device %s is alive\n", sens_obj_arr[i].sensor_name);
 		    			osEventFlagsSet(sensors_flag_id, sens_obj_arr[i].flagg);
 		    			osMutexRelease(I2C_mutex_id);
 				    } else {
+				    	print("!!!! device %s not active\n", sens_obj_arr[i].sensor_name);
 		    			osEventFlagsSet(sensors_flag_id, searching_flagg);
 
 				    }
@@ -60,6 +61,11 @@ void detect_thread_func(){
 
 void detect_INIT(){
 
+    sensors_flag_id = osEventFlagsNew(NULL);
+
+    I2C_mutex_id = osMutexNew(NULL);
+
+
     const osThreadAttr_t detect_thread_attr = {
         .name = "sensor_detection_thread",
         .stack_size = 1024,
@@ -67,10 +73,6 @@ void detect_INIT(){
     };
 
     detect_thread_id = osThreadNew(detect_thread_func, NULL, &detect_thread_attr);
-
-    sensors_flag_id = osEventFlagsNew(NULL);
-
-    I2C_mutex_id = osMutexNew(NULL);
 
 }
 
