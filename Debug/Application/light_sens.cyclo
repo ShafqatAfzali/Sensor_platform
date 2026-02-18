@@ -1,3 +1,3 @@
-../Application/light_sens.c:36:6:light_sens_config	1
-../Application/light_sens.c:58:6:light_sens_thread_func	6
-../Application/light_sens.c:114:6:light_sens_INIT	1
+../Application/light_sens.c:39:6:light_sens_config	3
+../Application/light_sens.c:76:6:light_sens_thread_func	5
+../Application/light_sens.c:124:6:light_sens_INIT	1

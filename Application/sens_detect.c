@@ -3,6 +3,7 @@
 #include "print.h"
 #include "i2c.h"
 #include "cmsis_os2.h"
+#include "light_sens.h"
 #include <stdbool.h>
 
 
@@ -24,35 +25,52 @@ osThreadId_t detect_thread_id;
 osEventFlagsId_t sensors_flag_id;
 osMutexId_t I2C_mutex_id;
 osStatus_t mutex_status;
+bool sens_detection_state;
 
 
 void detect_thread_func(){
 
 	while(true){
 
-		mutex_status = osMutexAcquire(I2C_mutex_id, osWaitForever);
+		//får flagget, i første runde spiller dette ikke noe rolle
+        uint32_t detect_flag = osEventFlagsGet(sensors_flag_id);
 
-		if(mutex_status == osOK){
+        //aktiverer thread og tømmer flagg
+		if(detect_flag==searching_flagg){
+			sens_detection_state=true;
+            osEventFlagsClear(sensors_flag_id, searching_flagg);
+		}
 
-			for (int i=0; i<3; i++){
-				detected_status = HAL_I2C_IsDeviceReady(&hi2c1, sens_obj_arr[i].sensor_addr << 1, 2, 100);
+		//hvis ingen sensor thread aktivert kjører deteksjon
+		if(sens_detection_state){
 
-				    if (detected_status == HAL_OK){
-				        print("device %s is alive\n", sens_obj_arr[i].sensor_name);
-		    			osEventFlagsSet(sensors_flag_id, sens_obj_arr[i].flagg);
-		    			osMutexRelease(I2C_mutex_id);
-				    } else {
-				    	print("!!!! device %s not active\n", sens_obj_arr[i].sensor_name);
-		    			osEventFlagsSet(sensors_flag_id, searching_flagg);
+			//sjekker om i2c blir brukt via mutex
+			mutex_status = osMutexAcquire(I2C_mutex_id, osWaitForever);
 
-				    }
+			if(mutex_status == osOK){
 
-				osDelay(500);
+				for (int i=0; i<3; i++){
+					//sjekker sensor status
+					detected_status = HAL_I2C_IsDeviceReady(&hi2c1, sens_obj_arr[i].sensor_addr << 1, 2, 100);
+						//hvis aktivert, setter flagg, deaktiverer deteksjon og slipper semafor
+					    if (detected_status == HAL_OK){
+					        print("device %s is alive\n", sens_obj_arr[i].sensor_name);
+			    			osEventFlagsSet(sensors_flag_id, sens_obj_arr[i].flagg);
+			    			osMutexRelease(I2C_mutex_id);
+			    			sens_detection_state=false;
+					    } else {
+					    	//hvis ikke setter flagg og releaser mutex, slik at deteksjon kjører fortsatt
+					    	print("!!!! device %s not active\n", sens_obj_arr[i].sensor_name);
+			    			osMutexRelease(I2C_mutex_id);
+					    }
+
+					osDelay(500);
+
+				}
 
 			}
 
-		} else {
-			print("i2c mutex failed");
+
 		}
 
 	}
@@ -60,6 +78,9 @@ void detect_thread_func(){
 
 
 void detect_INIT(){
+
+	//starter detection thread med engang
+	sens_detection_state=true;
 
     sensors_flag_id = osEventFlagsNew(NULL);
 
