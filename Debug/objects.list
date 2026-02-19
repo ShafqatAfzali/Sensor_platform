@@ -1,4 +1,4 @@
-"./Application/i2c_com.o"
+"./Application/accelerometer_sens.o"
 "./Application/light_sens.o"
 "./Application/myapp.o"
 "./Application/print.o"

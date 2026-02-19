@@ -5,21 +5,21 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
-../Application/i2c_com.c \
+../Application/accelerometer_sens.c \
 ../Application/light_sens.c \
 ../Application/myapp.c \
 ../Application/print.c \
 ../Application/sens_detect.c 
 
 OBJS += \
-./Application/i2c_com.o \
+./Application/accelerometer_sens.o \
 ./Application/light_sens.o \
 ./Application/myapp.o \
 ./Application/print.o \
 ./Application/sens_detect.o 
 
 C_DEPS += \
-./Application/i2c_com.d \
+./Application/accelerometer_sens.d \
 ./Application/light_sens.d \
 ./Application/myapp.d \
 ./Application/print.d \
@@ -33,7 +33,7 @@ Application/%.o Application/%.su Application/%.cyclo: ../Application/%.c Applica
 clean: clean-Application
 
 clean-Application:
-	-$(RM) ./Application/i2c_com.cyclo ./Application/i2c_com.d ./Application/i2c_com.o ./Application/i2c_com.su ./Application/light_sens.cyclo ./Application/light_sens.d ./Application/light_sens.o ./Application/light_sens.su ./Application/myapp.cyclo ./Application/myapp.d ./Application/myapp.o ./Application/myapp.su ./Application/print.cyclo ./Application/print.d ./Application/print.o ./Application/print.su ./Application/sens_detect.cyclo ./Application/sens_detect.d ./Application/sens_detect.o ./Application/sens_detect.su
+	-$(RM) ./Application/accelerometer_sens.cyclo ./Application/accelerometer_sens.d ./Application/accelerometer_sens.o ./Application/accelerometer_sens.su ./Application/light_sens.cyclo ./Application/light_sens.d ./Application/light_sens.o ./Application/light_sens.su ./Application/myapp.cyclo ./Application/myapp.d ./Application/myapp.o ./Application/myapp.su ./Application/print.cyclo ./Application/print.d ./Application/print.o ./Application/print.su ./Application/sens_detect.cyclo ./Application/sens_detect.d ./Application/sens_detect.o ./Application/sens_detect.su
 
 .PHONY: clean-Application
 

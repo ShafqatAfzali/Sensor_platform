@@ -7,23 +7,23 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, ALLOC, LOAD, READONLY, DATA
   1 .text         00007e14  080001d0  080001d0  000011d0  2**4
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  2 .rodata       000001f4  08007fe4  08007fe4  00008fe4  2**2
+  2 .rodata       000001fc  08007fe4  08007fe4  00008fe4  2**2
                   CONTENTS, ALLOC, LOAD, READONLY, DATA
-  3 .ARM.extab    00000000  080081d8  080081d8  0000a078  2**0
+  3 .ARM.extab    00000000  080081e0  080081e0  0000a078  2**0
                   CONTENTS, READONLY
-  4 .ARM          00000008  080081d8  080081d8  000091d8  2**2
+  4 .ARM          00000008  080081e0  080081e0  000091e0  2**2
                   CONTENTS, ALLOC, LOAD, READONLY, DATA
-  5 .preinit_array 00000000  080081e0  080081e0  0000a078  2**0
+  5 .preinit_array 00000000  080081e8  080081e8  0000a078  2**0
                   CONTENTS, ALLOC, LOAD, DATA
-  6 .init_array   00000004  080081e0  080081e0  000091e0  2**2
+  6 .init_array   00000004  080081e8  080081e8  000091e8  2**2
                   CONTENTS, ALLOC, LOAD, READONLY, DATA
-  7 .fini_array   00000004  080081e4  080081e4  000091e4  2**2
+  7 .fini_array   00000004  080081ec  080081ec  000091ec  2**2
                   CONTENTS, ALLOC, LOAD, READONLY, DATA
-  8 .data         00000078  20000000  080081e8  0000a000  2**2
+  8 .data         00000078  20000000  080081f0  0000a000  2**2
                   CONTENTS, ALLOC, LOAD, DATA
-  9 .bss          00004b7c  20000078  08008260  0000a078  2**2
+  9 .bss          00004b7c  20000078  08008268  0000a078  2**2
                   ALLOC
- 10 ._user_heap_stack 00000604  20004bf4  08008260  0000abf4  2**0
+ 10 ._user_heap_stack 00000604  20004bf4  08008268  0000abf4  2**0
                   ALLOC
  11 .ARM.attributes 00000030  00000000  00000000  0000a078  2**0
                   CONTENTS, READONLY
@@ -35,17 +35,17 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING, OCTETS
  15 .debug_rnglists 00000efc  00000000  00000000  00026d60  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 16 .debug_macro  00005d0b  00000000  00000000  00027c5c  2**0
+ 16 .debug_macro  00005c97  00000000  00000000  00027c5c  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_line   0001a532  00000000  00000000  0002d967  2**0
+ 17 .debug_line   0001a532  00000000  00000000  0002d8f3  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_str    000d5fde  00000000  00000000  00047e99  2**0
+ 18 .debug_str    000d5fde  00000000  00000000  00047e25  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .comment      00000043  00000000  00000000  0011de77  2**0
+ 19 .comment      00000043  00000000  00000000  0011de03  2**0
                   CONTENTS, READONLY
- 20 .debug_frame  000053f4  00000000  00000000  0011debc  2**2
+ 20 .debug_frame  000053f4  00000000  00000000  0011de48  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 21 .debug_line_str 00000067  00000000  00000000  001232b0  2**0
+ 21 .debug_line_str 00000067  00000000  00000000  0012323c  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -669,7 +669,7 @@ void light_sens_thread_func(){
  800075e:	17db      	asrs	r3, r3, #31
  8000760:	1ad3      	subs	r3, r2, r3
  8000762:	607b      	str	r3, [r7, #4]
-					print("output: %d Lux\n", output_mlux);
+					print("iluminance: %d mLux\n", output_mlux);
  8000764:	6879      	ldr	r1, [r7, #4]
  8000766:	4814      	ldr	r0, [pc, #80]	@ (80007b8 <light_sens_thread_func+0x104>)
  8000768:	f000 f860 	bl	800082c <print>
@@ -714,7 +714,7 @@ void light_sens_thread_func(){
  80007b0:	20000096 	.word	0x20000096
  80007b4:	66666667 	.word	0x66666667
  80007b8:	0800807c 	.word	0x0800807c
- 80007bc:	0800808c 	.word	0x0800808c
+ 80007bc:	08008094 	.word	0x08008094
 
 080007c0 <light_sens_INIT>:
 	}
@@ -765,7 +765,7 @@ void light_sens_INIT(){
  80007fc:	46bd      	mov	sp, r7
  80007fe:	bd80      	pop	{r7, pc}
  8000800:	20000094 	.word	0x20000094
- 8000804:	080080a0 	.word	0x080080a0
+ 8000804:	080080a8 	.word	0x080080a8
  8000808:	080006b5 	.word	0x080006b5
  800080c:	20000098 	.word	0x20000098
 
@@ -791,7 +791,7 @@ void myapp(){
  8000822:	bf00      	nop
  8000824:	bd80      	pop	{r7, pc}
  8000826:	bf00      	nop
- 8000828:	080080b4 	.word	0x080080b4
+ 8000828:	080080bc 	.word	0x080080bc
 
 0800082c <print>:
 #include <stdarg.h>
@@ -995,8 +995,8 @@ void detect_thread_func(){
  8000980:	20000000 	.word	0x20000000
  8000984:	200000b8 	.word	0x200000b8
  8000988:	2000009d 	.word	0x2000009d
- 800098c:	080080fc 	.word	0x080080fc
- 8000990:	08008110 	.word	0x08008110
+ 800098c:	08008104 	.word	0x08008104
+ 8000990:	08008118 	.word	0x08008118
 
 08000994 <detect_INIT>:
 
@@ -1065,7 +1065,7 @@ void detect_INIT(){
  80009ec:	200000b0 	.word	0x200000b0
  80009f0:	200000a4 	.word	0x200000a4
  80009f4:	200000a8 	.word	0x200000a8
- 80009f8:	0800812c 	.word	0x0800812c
+ 80009f8:	08008134 	.word	0x08008134
  80009fc:	0800088d 	.word	0x0800088d
  8000a00:	200000a0 	.word	0x200000a0
 
@@ -1131,7 +1131,7 @@ void MX_FREERTOS_Init(void) {
 }
  8000a48:	bf00      	nop
  8000a4a:	bd80      	pop	{r7, pc}
- 8000a4c:	08008168 	.word	0x08008168
+ 8000a4c:	08008170 	.word	0x08008170
  8000a50:	08000a59 	.word	0x08000a59
  8000a54:	200000b4 	.word	0x200000b4
 
@@ -2228,7 +2228,7 @@ LoopFillZerobss:
   ldr r1, =_edata
  8000fa8:	20000078 	.word	0x20000078
   ldr r2, =_sidata
- 8000fac:	080081e8 	.word	0x080081e8
+ 8000fac:	080081f0 	.word	0x080081f0
   ldr r2, =_sbss
  8000fb0:	20000078 	.word	0x20000078
   ldr r4, =_ebss
@@ -6834,7 +6834,7 @@ HAL_StatusTypeDef HAL_RCC_ClockConfig(const RCC_ClkInitTypeDef  *RCC_ClkInitStru
  8002aa2:	bf00      	nop
  8002aa4:	40023c00 	.word	0x40023c00
  8002aa8:	40023800 	.word	0x40023800
- 8002aac:	0800818c 	.word	0x0800818c
+ 8002aac:	08008194 	.word	0x08008194
  8002ab0:	20000018 	.word	0x20000018
  8002ab4:	2000001c 	.word	0x2000001c
 
@@ -6882,7 +6882,7 @@ uint32_t HAL_RCC_GetPCLK1Freq(void)
  8002aec:	4618      	mov	r0, r3
  8002aee:	bd80      	pop	{r7, pc}
  8002af0:	40023800 	.word	0x40023800
- 8002af4:	0800819c 	.word	0x0800819c
+ 8002af4:	080081a4 	.word	0x080081a4
 
 08002af8 <HAL_RCC_GetPCLK2Freq>:
   * @note   Each time PCLK2 changes, this function must be called to update the
@@ -6908,7 +6908,7 @@ uint32_t HAL_RCC_GetPCLK2Freq(void)
  8002b14:	4618      	mov	r0, r3
  8002b16:	bd80      	pop	{r7, pc}
  8002b18:	40023800 	.word	0x40023800
- 8002b1c:	0800819c 	.word	0x0800819c
+ 8002b1c:	080081a4 	.word	0x080081a4
 
 08002b20 <HAL_RCC_GetSysClockFreq>:
   *
@@ -15266,7 +15266,7 @@ BaseType_t xReturn;
  8005a4e:	46bd      	mov	sp, r7
  8005a50:	bd80      	pop	{r7, pc}
  8005a52:	bf00      	nop
- 8005a54:	08008150 	.word	0x08008150
+ 8005a54:	08008158 	.word	0x08008158
  8005a58:	08006155 	.word	0x08006155
  8005a5c:	20000d50 	.word	0x20000d50
  8005a60:	20000d4c 	.word	0x20000d4c
@@ -17715,7 +17715,7 @@ BaseType_t xReturn = pdFAIL;
  8006764:	bd80      	pop	{r7, pc}
  8006766:	bf00      	nop
  8006768:	20000d88 	.word	0x20000d88
- 800676c:	08008158 	.word	0x08008158
+ 800676c:	08008160 	.word	0x08008160
  8006770:	080068b1 	.word	0x080068b1
  8006774:	20000d8c 	.word	0x20000d8c
 
@@ -18824,7 +18824,7 @@ static void prvCheckForValidListAndQueue( void )
  8006d88:	20000d84 	.word	0x20000d84
  8006d8c:	20000e34 	.word	0x20000e34
  8006d90:	20000d94 	.word	0x20000d94
- 8006d94:	08008160 	.word	0x08008160
+ 8006d94:	08008168 	.word	0x08008168
 
 08006d98 <xTimerPendFunctionCallFromISR>:
 /*-----------------------------------------------------------*/
@@ -20493,10 +20493,10 @@ uint8_t *puc;
  800771e:	4798      	blx	r3
  8007720:	3601      	adds	r6, #1
  8007722:	e7f2      	b.n	800770a <__libc_init_array+0x1e>
- 8007724:	080081e0 	.word	0x080081e0
- 8007728:	080081e0 	.word	0x080081e0
- 800772c:	080081e0 	.word	0x080081e0
- 8007730:	080081e4 	.word	0x080081e4
+ 8007724:	080081e8 	.word	0x080081e8
+ 8007728:	080081e8 	.word	0x080081e8
+ 800772c:	080081e8 	.word	0x080081e8
+ 8007730:	080081ec 	.word	0x080081ec
 
 08007734 <__retarget_lock_acquire_recursive>:
  8007734:	4770      	bx	lr
@@ -21015,11 +21015,11 @@ uint8_t *puc;
  8007bd8:	4638      	mov	r0, r7
  8007bda:	f000 f879 	bl	8007cd0 <_printf_i>
  8007bde:	e7ed      	b.n	8007bbc <_svfiprintf_r+0x1c0>
- 8007be0:	080081a4 	.word	0x080081a4
- 8007be4:	080081ae 	.word	0x080081ae
+ 8007be0:	080081ac 	.word	0x080081ac
+ 8007be4:	080081b6 	.word	0x080081b6
  8007be8:	00000000 	.word	0x00000000
  8007bec:	08007945 	.word	0x08007945
- 8007bf0:	080081aa 	.word	0x080081aa
+ 8007bf0:	080081b2 	.word	0x080081b2
 
 08007bf4 <_printf_common>:
  8007bf4:	e92d 47f0 	stmdb	sp!, {r4, r5, r6, r7, r8, r9, sl, lr}
@@ -21348,8 +21348,8 @@ uint8_t *puc;
  8007efc:	2500      	movs	r5, #0
  8007efe:	f104 0619 	add.w	r6, r4, #25
  8007f02:	e7f5      	b.n	8007ef0 <_printf_i+0x220>
- 8007f04:	080081b5 	.word	0x080081b5
- 8007f08:	080081c6 	.word	0x080081c6
+ 8007f04:	080081bd 	.word	0x080081bd
+ 8007f08:	080081ce 	.word	0x080081ce
 
 08007f0c <memmove>:
  8007f0c:	4288      	cmp	r0, r1

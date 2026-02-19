@@ -16,7 +16,7 @@ typedef struct{
 static sensor_arr sens_obj_arr[3]={
 		{"pressure sensor", 0x77,0x01},
 		{"light sensor", 0x10,0x02},
-		{"accelerometer", 0x1C,0x04}};
+		{"accelerometer", 0x1D,0x04}};
 
 #define searching_flagg 0x8
 
