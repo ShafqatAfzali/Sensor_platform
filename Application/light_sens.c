@@ -38,37 +38,42 @@ HAL_StatusTypeDef config_transmit_status;
 
 void light_sens_config(){
 	//aktiverere registeret med 2x gain og 200ms light capture
-    uint8_t config_write[3] = {
-        sens_config_reg_addr,
-        (sens_config_write >> 8) & 0xFF, // MSB av config
-        sens_config_write & 0xFF         // LSB av config
-    };
-	size_t transmit_size = sizeof(config_write);
-	config_transmit_status=HAL_I2C_Master_Transmit(&hi2c1, sens_slave_addr<< 1, config_write, transmit_size, 200);
-	if(config_transmit_status==HAL_OK){
-		print("transmitted config\n");
-	}else{
-		print("\n\n transmit config failed \n\n");
+	osStatus_t I2C_status = osMutexAcquire(get_i2c_mutex_id(), osWaitForever);
 
+	if(I2C_status==osOK){
+	    uint8_t config_write[3] = {
+	        sens_config_reg_addr,
+	        (sens_config_write >> 8) & 0xFF, // MSB av config
+	        sens_config_write & 0xFF         // LSB av config
+	    };
+		size_t transmit_size = sizeof(config_write);
+		config_transmit_status=HAL_I2C_Master_Transmit(&hi2c1, sens_slave_addr<< 1, config_write, transmit_size, 200);
+		if(config_transmit_status==HAL_OK){
+			print("transmitted config\n");
+		}else{
+			print("\n\n transmit config failed \n\n");
+
+		}
+		osDelay(1000);
+
+		//aktiverere power saving mode med mode 00 (8uA)
+	    uint8_t config_PSM_write[3] = {
+	        sens_PSM_reg_addr,
+	        (sens_psm_write >> 8) & 0xFF,     // MSB først
+	        sens_psm_write & 0xFF    // LSB av psm
+	    };
+
+		size_t transmit_PSM_size = sizeof(config_PSM_write);
+		config_transmit_status=HAL_I2C_Master_Transmit(&hi2c1, sens_slave_addr<< 1, config_PSM_write, transmit_PSM_size, 200);
+		if(config_transmit_status==HAL_OK){
+			print("transmitted PSM config\n");
+		}else{
+			print("\n\n transmit PSM config failed \n\n");
+
+		}
+		osMutexRelease(get_i2c_mutex_id());
+		osDelay(1000);
 	}
-	osDelay(1000);
-
-	//aktiverere power saving mode med mode 00 (8uA)
-    uint8_t config_PSM_write[3] = {
-        sens_PSM_reg_addr,
-        (sens_psm_write >> 8) & 0xFF,     // MSB først
-        sens_psm_write & 0xFF    // LSB av psm
-    };
-
-	size_t transmit_PSM_size = sizeof(config_PSM_write);
-	config_transmit_status=HAL_I2C_Master_Transmit(&hi2c1, sens_slave_addr<< 1, config_PSM_write, transmit_PSM_size, 200);
-	if(config_transmit_status==HAL_OK){
-		print("transmitted PSM config\n");
-	}else{
-		print("\n\n transmit PSM config failed \n\n");
-
-	}
-	osDelay(1000);
 
 };
 

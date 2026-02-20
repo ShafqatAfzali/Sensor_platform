@@ -30,7 +30,7 @@ Application/myapp.o: ../Application/myapp.c ../Core/Inc/main.h \
  ../Application/myapp.h ../Core/Inc/usart.h ../Core/Inc/main.h \
  ../Application/print.h ../Application/sens_detect.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h \
- ../Application/light_sens.h
+ ../Application/light_sens.h ../Application/accelerometer_sens.h
 ../Core/Inc/main.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
 ../Core/Inc/stm32f4xx_hal_conf.h:
@@ -67,3 +67,4 @@ Application/myapp.o: ../Application/myapp.c ../Core/Inc/main.h \
 ../Application/sens_detect.h:
 ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h:
 ../Application/light_sens.h:
+../Application/accelerometer_sens.h:

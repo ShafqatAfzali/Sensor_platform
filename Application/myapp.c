@@ -6,6 +6,7 @@
 #include "print.h"
 #include "sens_detect.h"
 #include "light_sens.h"
+#include "accelerometer_sens.h"
 
 
 void myapp(){
@@ -14,4 +15,9 @@ void myapp(){
 
 	detect_INIT();
 	light_sens_INIT();
+	accelerometer_INIT();
+
 }
+
+
+
