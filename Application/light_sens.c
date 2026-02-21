@@ -37,43 +37,39 @@ osThreadId_t lightsens_thread_id;
 HAL_StatusTypeDef config_transmit_status;
 
 void light_sens_config(){
-	//aktiverere registeret med 2x gain og 200ms light capture
-	osStatus_t I2C_status = osMutexAcquire(get_i2c_mutex_id(), osWaitForever);
 
-	if(I2C_status==osOK){
-	    uint8_t config_write[3] = {
-	        sens_config_reg_addr,
-	        (sens_config_write >> 8) & 0xFF, // MSB av config
-	        sens_config_write & 0xFF         // LSB av config
-	    };
-		size_t transmit_size = sizeof(config_write);
-		config_transmit_status=HAL_I2C_Master_Transmit(&hi2c1, sens_slave_addr<< 1, config_write, transmit_size, 200);
-		if(config_transmit_status==HAL_OK){
-			print("transmitted config\n");
-		}else{
-			print("\n\n transmit config failed \n\n");
+	uint8_t config_write[3] = {
+		sens_config_reg_addr,
+		(sens_config_write >> 8) & 0xFF, // MSB av config
+		sens_config_write & 0xFF         // LSB av config
+	};
+	size_t transmit_size = sizeof(config_write);
+	config_transmit_status=HAL_I2C_Master_Transmit(&hi2c1, sens_slave_addr<< 1, config_write, transmit_size, 200);
+	if(config_transmit_status==HAL_OK){
+		print("transmitted config\n");
+	}else{
+		print("\n\n transmit config failed \n\n");
 
-		}
-		osDelay(1000);
-
-		//aktiverere power saving mode med mode 00 (8uA)
-	    uint8_t config_PSM_write[3] = {
-	        sens_PSM_reg_addr,
-	        (sens_psm_write >> 8) & 0xFF,     // MSB først
-	        sens_psm_write & 0xFF    // LSB av psm
-	    };
-
-		size_t transmit_PSM_size = sizeof(config_PSM_write);
-		config_transmit_status=HAL_I2C_Master_Transmit(&hi2c1, sens_slave_addr<< 1, config_PSM_write, transmit_PSM_size, 200);
-		if(config_transmit_status==HAL_OK){
-			print("transmitted PSM config\n");
-		}else{
-			print("\n\n transmit PSM config failed \n\n");
-
-		}
-		osMutexRelease(get_i2c_mutex_id());
-		osDelay(1000);
 	}
+	osDelay(1000);
+
+	//aktiverere power saving mode med mode 00 (8uA)
+	uint8_t config_PSM_write[3] = {
+		sens_PSM_reg_addr,
+		(sens_psm_write >> 8) & 0xFF,     // MSB først
+		sens_psm_write & 0xFF    // LSB av psm
+	};
+
+	size_t transmit_PSM_size = sizeof(config_PSM_write);
+	config_transmit_status=HAL_I2C_Master_Transmit(&hi2c1, sens_slave_addr<< 1, config_PSM_write, transmit_PSM_size, 200);
+	if(config_transmit_status==HAL_OK){
+		print("transmitted PSM config\n");
+	}else{
+		print("\n\n transmit PSM config failed \n\n");
+
+	}
+	osDelay(1000);
+
 
 };
 
@@ -86,19 +82,23 @@ void light_sens_thread_func(){
         uint32_t this_flag = osEventFlagsGet(get_flag_id());
 
         //aktiverer thread og tømmer flagg
-		if(this_flag==0x02){
+		if(this_flag & 0x02){
 			print("flag detected in light sensor\n\n");
-			light_sens_active = true;
+			osMutexAcquire(get_i2c_mutex_id(), osWaitForever);
 			light_sens_config();
+			osMutexRelease(get_i2c_mutex_id());
+			light_sens_active = true;
             osEventFlagsClear(get_flag_id(), 0x02);
 		}
 
 
 		if(light_sens_active){
+			print("\nrunning light sensor recieve");
 			//sikrer at i2c pins ikke blir brukt
 			osStatus_t I2C_status = osMutexAcquire(get_i2c_mutex_id(), osWaitForever);
 
 			if(I2C_status==osOK){
+				print("\n git the light sensor recieve mutex");
 				uint8_t rx_buffer[2];  // buffer for output dataen
 				//leser verdier med mem_read siden det er enklere og for å lese må vi ha repeated start etter transmitt
 				transmit_status = HAL_I2C_Mem_Read(&hi2c1, sens_slave_addr << 1, sens__HighRes_output_reg_addr, I2C_MEMADD_SIZE_8BIT, rx_buffer, 2, 200);
@@ -110,11 +110,14 @@ void light_sens_thread_func(){
 				} else {
 					print("I2C receive failed\n");
 					//aktiverer detekajon og deaktiverer thread while loop
+					HAL_I2C_DeInit(&hi2c1);
+					osDelay(50);
+					HAL_I2C_Init(&hi2c1);
 					osEventFlagsSet(get_flag_id(), 0x08);
 					light_sens_active=false;
 				}
 
-			}
+			}else{print("\n git the light sensor recieve mutex");}
 
 		    osMutexRelease(get_i2c_mutex_id());
 

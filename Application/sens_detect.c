@@ -36,42 +36,42 @@ void detect_thread_func(){
         uint32_t detect_flag = osEventFlagsGet(sensors_flag_id);
 
         //aktiverer thread og tømmer flagg
-		if(detect_flag==searching_flagg){
+		if(detect_flag & searching_flagg){
 			sens_detection_state=true;
             osEventFlagsClear(sensors_flag_id, searching_flagg);
 		}
 
 		//hvis ingen sensor thread aktivert kjører deteksjon
-		if(sens_detection_state){
+		//sjekker om i2c blir brukt via mutex
+		mutex_status = osMutexAcquire(I2C_mutex_id, osWaitForever);
 
-			//sjekker om i2c blir brukt via mutex
-			mutex_status = osMutexAcquire(I2C_mutex_id, osWaitForever);
+		if(mutex_status == osOK){
 
-			if(mutex_status == osOK){
-
-				for (int i=0; i<3; i++){
+			for (int i=0; i<3; i++){
+				if(sens_detection_state){
 					//sjekker sensor status
 					detected_status = HAL_I2C_IsDeviceReady(&hi2c1, sens_obj_arr[i].sensor_addr << 1, 2, 100);
 						//hvis aktivert, setter flagg, deaktiverer deteksjon og slipper semafor
-					    if (detected_status == HAL_OK){
-					        print("device %s is alive\n", sens_obj_arr[i].sensor_name);
-			    			osEventFlagsSet(sensors_flag_id, sens_obj_arr[i].flagg);
-			    			osMutexRelease(I2C_mutex_id);
-			    			sens_detection_state=false;
-					    } else {
-					    	//hvis ikke setter flagg og releaser mutex, slik at deteksjon kjører fortsatt
-					    	print("!!!! device %s not active\n", sens_obj_arr[i].sensor_name);
-			    			osMutexRelease(I2C_mutex_id);
-					    }
+						if (detected_status == HAL_OK){
+							print("device %s is alive\n", sens_obj_arr[i].sensor_name);
+							osEventFlagsSet(sensors_flag_id, sens_obj_arr[i].flagg);
+							sens_detection_state=false;
+							break;
+						} else {
+							//hvis ikke setter flagg og releaser mutex, slik at deteksjon kjører fortsatt
+							print("!!!! device %s not active\n", sens_obj_arr[i].sensor_name);
+						    HAL_I2C_DeInit(&hi2c1);
+						    osDelay(50);
+						    HAL_I2C_Init(&hi2c1);
+						}
 
-					osDelay(500);
-
+					osDelay(200);
 				}
 
 			}
-
-
 		}
+		osMutexRelease(I2C_mutex_id);
+		osDelay(200);
 
 	}
 }
