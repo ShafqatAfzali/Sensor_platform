@@ -59,7 +59,7 @@ void detect_thread_func(){
 							break;
 						} else {
 							//hvis ikke setter flagg og releaser mutex, slik at deteksjon kjører fortsatt
-							print("!!!! device %s not active\n", sens_obj_arr[i].sensor_name);
+							//print("!!!! device %s not active\n", sens_obj_arr[i].sensor_name);
 						    HAL_I2C_DeInit(&hi2c1);
 						    osDelay(50);
 						    HAL_I2C_Init(&hi2c1);

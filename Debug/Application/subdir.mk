@@ -6,6 +6,7 @@
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
 ../Application/accelerometer_sens.c \
+../Application/display_driver.c \
 ../Application/light_sens.c \
 ../Application/myapp.c \
 ../Application/print.c \
@@ -13,6 +14,7 @@ C_SRCS += \
 
 OBJS += \
 ./Application/accelerometer_sens.o \
+./Application/display_driver.o \
 ./Application/light_sens.o \
 ./Application/myapp.o \
 ./Application/print.o \
@@ -20,6 +22,7 @@ OBJS += \
 
 C_DEPS += \
 ./Application/accelerometer_sens.d \
+./Application/display_driver.d \
 ./Application/light_sens.d \
 ./Application/myapp.d \
 ./Application/print.d \
@@ -33,7 +36,7 @@ Application/%.o Application/%.su Application/%.cyclo: ../Application/%.c Applica
 clean: clean-Application
 
 clean-Application:
-	-$(RM) ./Application/accelerometer_sens.cyclo ./Application/accelerometer_sens.d ./Application/accelerometer_sens.o ./Application/accelerometer_sens.su ./Application/light_sens.cyclo ./Application/light_sens.d ./Application/light_sens.o ./Application/light_sens.su ./Application/myapp.cyclo ./Application/myapp.d ./Application/myapp.o ./Application/myapp.su ./Application/print.cyclo ./Application/print.d ./Application/print.o ./Application/print.su ./Application/sens_detect.cyclo ./Application/sens_detect.d ./Application/sens_detect.o ./Application/sens_detect.su
+	-$(RM) ./Application/accelerometer_sens.cyclo ./Application/accelerometer_sens.d ./Application/accelerometer_sens.o ./Application/accelerometer_sens.su ./Application/display_driver.cyclo ./Application/display_driver.d ./Application/display_driver.o ./Application/display_driver.su ./Application/light_sens.cyclo ./Application/light_sens.d ./Application/light_sens.o ./Application/light_sens.su ./Application/myapp.cyclo ./Application/myapp.d ./Application/myapp.o ./Application/myapp.su ./Application/print.cyclo ./Application/print.d ./Application/print.o ./Application/print.su ./Application/sens_detect.cyclo ./Application/sens_detect.d ./Application/sens_detect.o ./Application/sens_detect.su
 
 .PHONY: clean-Application
 

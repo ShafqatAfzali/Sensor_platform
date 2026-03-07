@@ -7,17 +7,17 @@
 #include "sens_detect.h"
 #include "light_sens.h"
 #include "accelerometer_sens.h"
+#include "display_driver.h"
+#include "spi.h"
 
 
-void myapp(){
 
-	print("starting process ....\n");
-
-	detect_INIT();
-	light_sens_INIT();
-	accelerometer_INIT();
-
+void myapp(void)
+{
+	display_INIT();
+    detect_INIT();
+    light_sens_INIT();
+    accelerometer_INIT();
 }
-
 
 
