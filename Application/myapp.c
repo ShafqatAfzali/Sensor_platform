@@ -9,12 +9,15 @@
 #include "accelerometer_sens.h"
 #include "display_driver.h"
 #include "spi.h"
+#include "lvgl_send.h"
 
 
 
 void myapp(void)
 {
-	display_INIT();
+	print("process stating\n");
+	lvgl_thread_INIT();
+	//display_INIT();
     detect_INIT();
     light_sens_INIT();
     accelerometer_INIT();

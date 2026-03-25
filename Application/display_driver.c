@@ -4,19 +4,13 @@
 #include "cmsis_os.h"
 #include <stdint.h>
 #include "print.h"
-
-#define display_width  128
-#define display_height 160
-//høydexbreddex2
-#define total_display_bytes 40960
-
-static uint8_t imgbuff[total_display_bytes];
+#include "lvgl_send.h"
 
 void display_write_command(uint8_t command)
 {
 	HAL_GPIO_WritePin(SPI_DC_GPIO_Port, SPI_DC_Pin, 0);
 	HAL_GPIO_WritePin(SPI_CS_GPIO_Port, SPI_CS_Pin, 0);
-    HAL_SPI_Transmit(&hspi2, &command, 1, 100);
+	HAL_SPI_Transmit(&hspi2, &command, 1, 100);
     HAL_GPIO_WritePin(SPI_CS_GPIO_Port, SPI_CS_Pin, 1);
 }
 
@@ -25,7 +19,7 @@ void display_write_data(uint8_t data)
 
 	HAL_GPIO_WritePin(SPI_DC_GPIO_Port, SPI_DC_Pin, 1);
 	HAL_GPIO_WritePin(SPI_CS_GPIO_Port, SPI_CS_Pin, 0);
-    HAL_SPI_Transmit(&hspi2, &data, 1, 100);
+	HAL_SPI_Transmit(&hspi2, &data, 1, 100);
     HAL_GPIO_WritePin(SPI_CS_GPIO_Port, SPI_CS_Pin, 1);
 
 }
@@ -41,7 +35,7 @@ void display_hardware_reset()
 
 void display_software_reset(){
 	display_write_command(0x01);
-    osDelay(150);
+    osDelay(120);
 }
 
 
@@ -106,9 +100,9 @@ void display_pixel_format_16bit(){
 void display_60hz_frame_rate_normal(void) {
 	display_write_command(0xB1);
     // DIVA=14
-	display_write_data(0x0E);
+	display_write_data(0x05);
     // VPA=22
-	display_write_data(0x16);
+	display_write_data(0x10);
 }
 
 // bruker senere når jeg skal spare power 37.4Hz egentlig
@@ -140,7 +134,6 @@ void display_set_columns(uint16_t XS,uint16_t XE){
 	display_write_data(XEM);
 	uint8_t XEL = XE & 0xFF;
 	display_write_data(XEL);
-	print("columns X-axis set at %d\n",XE);
 }
 
 //samme som i x aksen
@@ -154,7 +147,6 @@ void display_set_rows(uint16_t YS,uint16_t YE){
 	display_write_data(YEM);
 	uint8_t YEL = YE & 0xFF;
 	display_write_data(YEL);
-	print("columns Y-axis %d\n",YE);
 }
 
 
@@ -186,47 +178,6 @@ void display_set_img(img_obj *this_img)
 	}
 }
 
-
-/*
-void display_test_thread(){
-	print("display test thread started\n");
-	uint32_t count=0;
-	img_obj myimg;
-
-	myimg.pixels = imgbuff;
-
-	myimg.XS=0x00;
-	myimg.XE=0x7F;
-	myimg.YS=0x00;
-	myimg.YE=0x9F;
-
-	while (1){
-
-		count++;
-		if(count%2==0){
-
-			for(int i=0; i<total_display_bytes; i++){
-				myimg.pixels[i]=0x23;
-			}
-
-		} else{
-
-			for(int i=0; i<total_display_bytes; i++){
-				myimg.pixels[i]=0x18;
-			}
-
-		}
-
-		print("image set\n");
-		display_set_img(&myimg);
-		osDelay(2000);
-
-	}
-
-}*/
-
-
-
 void display_test_single_color(uint16_t color) {
     img_obj myimg;
     myimg.pixels = imgbuff;
@@ -243,22 +194,7 @@ void display_test_single_color(uint16_t color) {
     display_set_img(&myimg);
 }
 
-
-void display_test_thread(){
-
-	while(1) {
-	    display_test_single_color(0xF800);
-	    osDelay(2000);
-	    display_test_single_color(0x07E0);
-	    osDelay(2000);
-	    display_test_single_color(0x001F);
-	    osDelay(2000);
-	}
-
-}
-
-void display_INIT(void)
-{
+void display_config(){
 	//resetter
 	display_hardware_reset();
 	osDelay(120);
@@ -287,8 +223,28 @@ void display_INIT(void)
 
 	//slår på slik at display får pixel info fra GRAM
 	display_on();
+	osDelay(120);
+
+	//display_idle_mode_on();
+}
 
 
+void display_test_thread(){
+	display_config();
+
+	while(1) {
+	    display_test_single_color(0xF800);
+	    osDelay(2000);
+	    display_test_single_color(0x07E0);
+	    osDelay(2000);
+	    display_test_single_color(0x001F);
+	    osDelay(2000);
+	}
+
+}
+
+
+void display_INIT(){
 
 	osThreadAttr_t display_thread_attr = {
 	    .name = "display_thread",
@@ -297,7 +253,13 @@ void display_INIT(void)
 	};
 
     osThreadNew(display_test_thread, NULL, &display_thread_attr);
+
 }
+
+
+
+
+
 
 
 

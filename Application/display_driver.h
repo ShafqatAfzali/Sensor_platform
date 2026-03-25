@@ -2,6 +2,12 @@
 #define _DISPLAY_DRIVER_
 #include <stdint.h>
 
+#define display_width  128
+#define display_height 160
+//høydexbreddex2
+#define total_display_bytes 40960
+
+
 typedef struct {
 	uint8_t *pixels;
 	uint16_t XS;
@@ -10,6 +16,11 @@ typedef struct {
 	uint16_t YE;
 
 } img_obj;
+
+/*
+void display_write_command(uint8_t command, char *type);
+void display_write_data(uint8_t data, char *type);
+*/
 
 void display_write_command(uint8_t command);
 void display_write_data(uint8_t data);
@@ -31,7 +42,11 @@ void display_inversion_config(void);
 void display_set_columns(uint16_t XS, uint16_t XE);
 void display_set_rows(uint16_t YS, uint16_t YE);
 void display_set_img(img_obj *this_img);
-void display_INIT(void);
+void display_config();
+void display_INIT();
+void display_test_thread();
+void display_test_single_color(uint16_t color);
+
 
 #endif
 

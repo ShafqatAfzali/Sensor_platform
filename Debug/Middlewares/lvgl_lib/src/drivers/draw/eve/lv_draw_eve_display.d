@@ -1,0 +1,10 @@
+Middlewares/lvgl_lib/src/drivers/draw/eve/lv_draw_eve_display.o: \
+ ../Middlewares/lvgl_lib/src/drivers/draw/eve/lv_draw_eve_display.c \
+ ../Middlewares/lvgl_lib/src/drivers/draw/eve/lv_draw_eve_display.h \
+ ../Middlewares/lvgl_lib/src/drivers/draw/eve/../../../lv_conf_internal.h \
+ ../Middlewares/lvgl_lib/src/drivers/draw/eve/../../../lv_conf_kconfig.h \
+ C:/Users/shafg/Desktop/Projects_Firmware/sensor_platform/Middlewares/lvgl_lib/lv_conf.h
+../Middlewares/lvgl_lib/src/drivers/draw/eve/lv_draw_eve_display.h:
+../Middlewares/lvgl_lib/src/drivers/draw/eve/../../../lv_conf_internal.h:
+../Middlewares/lvgl_lib/src/drivers/draw/eve/../../../lv_conf_kconfig.h:
+C:/Users/shafg/Desktop/Projects_Firmware/sensor_platform/Middlewares/lvgl_lib/lv_conf.h:

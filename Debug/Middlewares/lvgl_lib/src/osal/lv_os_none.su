@@ -1,0 +1,1 @@
+../Middlewares/lvgl_lib/src/osal/lv_os_none.c:41:10:lv_os_get_idle_percent	8	static
