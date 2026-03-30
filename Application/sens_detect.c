@@ -13,8 +13,9 @@ typedef struct{
 	uint8_t flagg;
 } sensor_arr;
 
+//sensor navn, sensor adresse, flagg
 static sensor_arr sens_obj_arr[3]={
-		{"pressure sensor", 0x77,0x01},
+		{"temp sensor", 0x38,0x01},
 		{"light sensor", 0x10,0x02},
 		{"accelerometer", 0x1D,0x04}};
 
@@ -29,9 +30,8 @@ bool sens_detection_state;
 
 
 void detect_thread_func(){
-
+	print("in detect_thread_func\n");
 	while(true){
-
 		//får flagget, i første runde spiller dette ikke noe rolle
         uint32_t detect_flag = osEventFlagsGet(sensors_flag_id);
 
@@ -59,7 +59,7 @@ void detect_thread_func(){
 							break;
 						} else {
 							//hvis ikke setter flagg og releaser mutex, slik at deteksjon kjører fortsatt
-							//print("!!!! device %s not active\n", sens_obj_arr[i].sensor_name);
+							print("not sensor found\n");
 						    HAL_I2C_DeInit(&hi2c1);
 						    osDelay(50);
 						    HAL_I2C_Init(&hi2c1);
@@ -85,7 +85,7 @@ void detect_INIT(){
     sensors_flag_id = osEventFlagsNew(NULL);
 
     I2C_mutex_id = osMutexNew(NULL);
-
+    print("about to create sensor detection thread\n");
 
     const osThreadAttr_t detect_thread_attr = {
         .name = "sensor_detection_thread",
@@ -95,6 +95,9 @@ void detect_INIT(){
 
     detect_thread_id = osThreadNew(detect_thread_func, NULL, &detect_thread_attr);
 
+    if(detect_thread_id==HAL_OK){
+    	print("sensor detection thread created\n");
+    }
 }
 
 osEventFlagsId_t get_flag_id() {

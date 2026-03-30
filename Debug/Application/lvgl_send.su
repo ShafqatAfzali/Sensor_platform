@@ -1,4 +1,5 @@
-../Application/lvgl_send.c:11:6:my_flush_cb	40	static
-../Application/lvgl_send.c:39:6:lvgl_thread	24	static
-../Application/lvgl_send.c:74:6:lv_tick_thread	16	static
-../Application/lvgl_send.c:82:6:lvgl_thread_INIT	48	static
+../Application/lvgl_send.c:17:6:my_flush_cb	40	static
+../Application/lvgl_send.c:44:6:lvgl_thread	168	static
+../Application/lvgl_send.c:106:6:lv_tick_thread	16	static
+../Application/lvgl_send.c:114:6:lvgl_thread_INIT	48	static
+../Application/lvgl_send.c:130:20:msg_queue_get	4	static

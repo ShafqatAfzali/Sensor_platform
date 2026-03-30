@@ -12,7 +12,8 @@ C_SRCS += \
 ../Application/my_detach.c \
 ../Application/myapp.c \
 ../Application/print.c \
-../Application/sens_detect.c 
+../Application/sens_detect.c \
+../Application/temp_sens.c 
 
 OBJS += \
 ./Application/accelerometer_sens.o \
@@ -22,7 +23,8 @@ OBJS += \
 ./Application/my_detach.o \
 ./Application/myapp.o \
 ./Application/print.o \
-./Application/sens_detect.o 
+./Application/sens_detect.o \
+./Application/temp_sens.o 
 
 C_DEPS += \
 ./Application/accelerometer_sens.d \
@@ -32,7 +34,8 @@ C_DEPS += \
 ./Application/my_detach.d \
 ./Application/myapp.d \
 ./Application/print.d \
-./Application/sens_detect.d 
+./Application/sens_detect.d \
+./Application/temp_sens.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes
@@ -42,7 +45,7 @@ Application/%.o Application/%.su Application/%.cyclo: ../Application/%.c Applica
 clean: clean-Application
 
 clean-Application:
-	-$(RM) ./Application/accelerometer_sens.cyclo ./Application/accelerometer_sens.d ./Application/accelerometer_sens.o ./Application/accelerometer_sens.su ./Application/display_driver.cyclo ./Application/display_driver.d ./Application/display_driver.o ./Application/display_driver.su ./Application/light_sens.cyclo ./Application/light_sens.d ./Application/light_sens.o ./Application/light_sens.su ./Application/lvgl_send.cyclo ./Application/lvgl_send.d ./Application/lvgl_send.o ./Application/lvgl_send.su ./Application/my_detach.cyclo ./Application/my_detach.d ./Application/my_detach.o ./Application/my_detach.su ./Application/myapp.cyclo ./Application/myapp.d ./Application/myapp.o ./Application/myapp.su ./Application/print.cyclo ./Application/print.d ./Application/print.o ./Application/print.su ./Application/sens_detect.cyclo ./Application/sens_detect.d ./Application/sens_detect.o ./Application/sens_detect.su
+	-$(RM) ./Application/accelerometer_sens.cyclo ./Application/accelerometer_sens.d ./Application/accelerometer_sens.o ./Application/accelerometer_sens.su ./Application/display_driver.cyclo ./Application/display_driver.d ./Application/display_driver.o ./Application/display_driver.su ./Application/light_sens.cyclo ./Application/light_sens.d ./Application/light_sens.o ./Application/light_sens.su ./Application/lvgl_send.cyclo ./Application/lvgl_send.d ./Application/lvgl_send.o ./Application/lvgl_send.su ./Application/my_detach.cyclo ./Application/my_detach.d ./Application/my_detach.o ./Application/my_detach.su ./Application/myapp.cyclo ./Application/myapp.d ./Application/myapp.o ./Application/myapp.su ./Application/print.cyclo ./Application/print.d ./Application/print.o ./Application/print.su ./Application/sens_detect.cyclo ./Application/sens_detect.d ./Application/sens_detect.o ./Application/sens_detect.su ./Application/temp_sens.cyclo ./Application/temp_sens.d ./Application/temp_sens.o ./Application/temp_sens.su
 
 .PHONY: clean-Application
 

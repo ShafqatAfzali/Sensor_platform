@@ -32,8 +32,8 @@ Application/myapp.o: ../Application/myapp.c ../Core/Inc/main.h \
  ../Application/print.h ../Application/sens_detect.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h \
  ../Application/light_sens.h ../Application/accelerometer_sens.h \
- ../Application/display_driver.h ../Core/Inc/spi.h \
- ../Application/lvgl_send.h \
+ ../Application/temp_sens.h ../Application/display_driver.h \
+ ../Core/Inc/spi.h ../Application/lvgl_send.h \
  C:/Users/shafg/Desktop/Projects_Firmware/sensor_platform/Middlewares/lvgl_lib/lvgl.h \
  C:/Users/shafg/Desktop/Projects_Firmware/sensor_platform/Middlewares/lvgl_lib/lv_version.h \
  C:/Users/shafg/Desktop/Projects_Firmware/sensor_platform/Middlewares/lvgl_lib/src/lv_init.h \
@@ -520,6 +520,7 @@ Application/myapp.o: ../Application/myapp.c ../Core/Inc/main.h \
 ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h:
 ../Application/light_sens.h:
 ../Application/accelerometer_sens.h:
+../Application/temp_sens.h:
 ../Application/display_driver.h:
 ../Core/Inc/spi.h:
 ../Application/lvgl_send.h:

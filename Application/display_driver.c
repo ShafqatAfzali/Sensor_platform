@@ -1,7 +1,7 @@
 #include "display_driver.h"
 #include "spi.h"
 #include "main.h"
-#include "cmsis_os.h"
+#include "cmsis_os2.h"
 #include <stdint.h>
 #include "print.h"
 #include "lvgl_send.h"
@@ -173,6 +173,7 @@ void display_set_img(img_obj *this_img)
 	HAL_GPIO_WritePin(SPI_CS_GPIO_Port, SPI_CS_Pin, 1);
 	if(status==HAL_OK){
 		print("its sending bruh\n");
+		osDelay(1);
 	}else{
 		print("boooooo\n");
 	}

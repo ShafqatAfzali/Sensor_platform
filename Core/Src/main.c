@@ -102,7 +102,7 @@ int main(void)
   /* Init scheduler */
   osKernelInitialize();  /* Call init function for freertos objects (in cmsis_os2.c) */
   MX_FREERTOS_Init();
-  myapp();
+
   /* Start scheduler */
   osKernelStart();
 

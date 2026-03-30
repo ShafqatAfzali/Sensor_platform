@@ -5,6 +5,7 @@
 #include "i2c.h"
 #include "cmsis_os2.h"
 #include <stdbool.h>
+#include "lvgl_send.h"
 
 #define accelometer_addr 0x1D
 uint8_t X_MSB_reg_addr=0x01;
@@ -38,6 +39,8 @@ HAL_StatusTypeDef acclerometer_transmit_status;
 HAL_StatusTypeDef accelormeter_recieve_status;
 osThreadId_t accelerometer_thread_id;
 bool accelerometer_active;
+
+changed_sens_obj accleration_msg;
 
 //lagde funksjonen for å forkorte koden og rengjøre
 //det funker nesten på samme måte som når vi skriver i light_sens.c
@@ -156,13 +159,28 @@ void accelormeter_thread_func(){
 					int32_t Y_ms2 = ((int32_t)Y_axl * 9810) / 2048;
 					int32_t Z_ms2 = ((int32_t)Z_axl * 9810) / 2048;
 
+					strcpy(accleration_msg.sens_type, "acceleration");
+					accleration_msg.sens_data[0] = X_ms2;
+					accleration_msg.sens_data[1] = Y_ms2;
+					accleration_msg.sens_data[2] = Z_ms2;
+
+					osMessageQueuePut(msg_queue_get(), &accleration_msg, 0,0);
+
 					print("\n\n x= %d mm/s^2\n y= %d mm/s^2\n z= %d mm/s^2",X_ms2,Y_ms2,Z_ms2);
 				}else{
 					HAL_I2C_DeInit(&hi2c1);
 					osDelay(50);
 					HAL_I2C_Init(&hi2c1);
 					accelerometer_active=false;
+
 					osEventFlagsSet(get_flag_id(),0x08);
+
+					strcpy(accleration_msg.sens_type, "no sensor");
+					accleration_msg.sens_data[0] = 0;
+					accleration_msg.sens_data[1] = 0;
+					accleration_msg.sens_data[2] = 0;
+
+					osMessageQueuePut(msg_queue_get(), &accleration_msg, 0,0);
 				}
 			}
 

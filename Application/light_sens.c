@@ -1,9 +1,11 @@
-#include "main.h"
+#include "light_sens.h"
 #include "print.h"
 #include "sens_detect.h"
 #include "i2c.h"
 #include "cmsis_os2.h"
 #include <stdbool.h>
+#include "lvgl_send.h"
+#include <string.h>
 
 //0x20 for write
 //0x21 for read
@@ -35,6 +37,9 @@ uint16_t light_sens_output;
 osThreadId_t lightsens_thread_id;
 
 HAL_StatusTypeDef config_transmit_status;
+
+changed_sens_obj msg;
+
 
 void light_sens_config(){
 
@@ -77,13 +82,11 @@ void light_sens_config(){
 void light_sens_thread_func(){
 
 	while(true){
-
 		//får flagget
         uint32_t this_flag = osEventFlagsGet(get_flag_id());
 
         //aktiverer thread og tømmer flagg
 		if(this_flag & 0x02){
-			print("flag detected in light sensor\n\n");
 			osMutexAcquire(get_i2c_mutex_id(), osWaitForever);
 			light_sens_config();
 			osMutexRelease(get_i2c_mutex_id());
@@ -93,12 +96,11 @@ void light_sens_thread_func(){
 
 
 		if(light_sens_active){
-			print("\nrunning light sensor recieve");
 			//sikrer at i2c pins ikke blir brukt
 			osStatus_t I2C_status = osMutexAcquire(get_i2c_mutex_id(), osWaitForever);
 
 			if(I2C_status==osOK){
-				print("\n git the light sensor recieve mutex");
+				print("\nlight sensor recieved mutex");
 				uint8_t rx_buffer[2];  // buffer for output dataen
 				//leser verdier med mem_read siden det er enklere og for å lese må vi ha repeated start etter transmitt
 				transmit_status = HAL_I2C_Mem_Read(&hi2c1, sens_slave_addr << 1, sens__HighRes_output_reg_addr, I2C_MEMADD_SIZE_8BIT, rx_buffer, 2, 200);
@@ -107,6 +109,13 @@ void light_sens_thread_func(){
 					light_sens_output = (rx_buffer[1] << 8) | rx_buffer[0];
 					uint32_t output_mlux = (light_sens_output * 168) / 10;
 					print("iluminance: %d mLux\n", output_mlux);
+
+					strcpy(msg.sens_type, "light");
+					msg.sens_data[0] = output_mlux;
+					msg.sens_data[1] = 0;
+					msg.sens_data[2] = 0;
+
+					osMessageQueuePut(msg_queue_get(), &msg, 0,0);
 				} else {
 					print("I2C receive failed\n");
 					//aktiverer detekajon og deaktiverer thread while loop
@@ -115,9 +124,16 @@ void light_sens_thread_func(){
 					HAL_I2C_Init(&hi2c1);
 					osEventFlagsSet(get_flag_id(), 0x08);
 					light_sens_active=false;
+
+					strcpy(msg.sens_type, "no sensor");
+					msg.sens_data[0] = 0;
+					msg.sens_data[1] = 0;
+					msg.sens_data[2] = 0;
+
+					osMessageQueuePut(msg_queue_get(), &msg, 0,0);
 				}
 
-			}else{print("\n git the light sensor recieve mutex");}
+			}else{print("\n light sensor didnt recieve mutex");}
 
 		    osMutexRelease(get_i2c_mutex_id());
 
