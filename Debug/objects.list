@@ -4,6 +4,7 @@
 "./Application/lvgl_send.o"
 "./Application/my_detach.o"
 "./Application/myapp.o"
+"./Application/mytouch.o"
 "./Application/print.o"
 "./Application/sens_detect.o"
 "./Application/temp_sens.o"
