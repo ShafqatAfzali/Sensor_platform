@@ -2,6 +2,9 @@
 #include "cmsis_os2.h"
 #include <stddef.h>
 #include "mytouch.h"
+#include "adc.h"
+#include "dma.h"
+#include "gpio.h"
 
 pinstate XR_state;
 pinstate XL_state;
@@ -26,75 +29,108 @@ osThreadId_t touchscreen_thread_id;
 #define YD_Pin GPIO_PIN_0
 #define YD_GPIO_Port GPIOB
 
-void set_analog_ou(int i){
-    // setter Pinnene til Analog pinner
+
+//aktiverer pin x til adc
+//hvis i=0, PA0 (channel 0)
+//hvis i=1, PA1 (channel 1)
+void set_pin_adc(int i)
+{
     GPIO_InitTypeDef GPIO_InitStruct = {0};
 
-    if(i == 0) {
-        GPIO_InitStruct.Pin = XR_Pin;
-    } else {
-        GPIO_InitStruct.Pin = YU_Pin;
+    if(i==0){
+    	GPIO_InitStruct.Pin = XR_Pin;
+    }else{
+    	GPIO_InitStruct.Pin = YU_Pin;
     }
-
     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
-    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
+    if(i==0){
+    	HAL_GPIO_Init(XR_GPIO_Port, &GPIO_InitStruct);
+    }else{
+    	HAL_GPIO_Init(YU_GPIO_Port, &GPIO_InitStruct);
+    }
 }
 
-//setter pinnen til adc, 0 Xr pinne og 1 YU pinne
-void set_adc(int i)
+
+//aktiverer pin x til output VCC
+//hvis i=0, PA0 til VCC
+//hvis i=1, PA1 til VCC
+void set_pin_vcc(int i)
 {
-    //starter klokken
-    __HAL_RCC_ADC1_CLK_ENABLE();
-    __HAL_RCC_GPIOA_CLK_ENABLE();
-    __HAL_RCC_DMA2_CLK_ENABLE();
+    GPIO_InitTypeDef GPIO_InitStruct = {0};
 
-    // konfigurerer ADC
-    hadc1.Instance = ADC1;
-    hadc1.Init.Resolution = ADC_RESOLUTION_12B;
-    hadc1.Init.ScanConvMode = DISABLE;
-    hadc1.Init.ContinuousConvMode = DISABLE;
-    hadc1.Init.DiscontinuousConvMode = DISABLE;
-    hadc1.Init.ExternalTrigConv = ADC_EXTERNALTRIGCONV_T2_TRGO;
-    hadc1.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_RISING;
-    hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
-    hadc1.Init.NbrOfConversion = 1;
-    hadc1.Init.DMAContinuousRequests = ENABLE;
-    hadc1.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
+    if(i==0){
+    	GPIO_InitStruct.Pin = XR_Pin;
+    }else{
+    	GPIO_InitStruct.Pin = YU_Pin;
 
-    HAL_ADC_Init(&hadc1);
+    }
+    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
 
-    //setter adc channel, (IN0) chennel 0--> PA0 og (IN1) channel 1 --> PA1
-    ADC_ChannelConfTypeDef sConfig = {0};
-
-    if(i == 0) {
-        sConfig.Channel = ADC_CHANNEL_0;
-    } else {
-        sConfig.Channel = ADC_CHANNEL_1;
+    if(i==0){
+        HAL_GPIO_Init(XR_GPIO_Port, &GPIO_InitStruct);
+        HAL_GPIO_WritePin(XR_GPIO_Port, XR_Pin, GPIO_PIN_SET);
+    }else{
+        HAL_GPIO_Init(YU_GPIO_Port, &GPIO_InitStruct);
+        HAL_GPIO_WritePin(YU_GPIO_Port, YU_Pin, GPIO_PIN_SET);
     }
 
-    sConfig.Rank = 1;
-    sConfig.SamplingTime = ADC_SAMPLETIME_15CYCLES;
-
-    HAL_ADC_ConfigChannel(&hadc1, &sConfig);
-
-    // 5 konfigurer DMA, DMA2_STRAM0 tilsvarer DMA for ADC1
-    hdma_adc1.Instance = DMA2_Stream0;
-    hdma_adc1.Init.Channel = DMA_CHANNEL_0;
-    hdma_adc1.Init.Direction = DMA_PERIPH_TO_MEMORY;
-    hdma_adc1.Init.PeriphInc = DMA_PINC_DISABLE;
-    hdma_adc1.Init.MemInc = DMA_MINC_ENABLE;
-    hdma_adc1.Init.PeriphDataAlignment = DMA_PDATAALIGN_HALFWORD;
-    hdma_adc1.Init.MemDataAlignment = DMA_MDATAALIGN_HALFWORD;
-    hdma_adc1.Init.Mode = DMA_CIRCULAR;
-    hdma_adc1.Init.Priority = DMA_PRIORITY_Normal;
-
-    HAL_DMA_Init(&hdma_adc1);
-
-    // kobler dma til ADC1
-    __HAL_LINKDMA(&hadc1, DMA_Handle, hdma_adc1);
 }
+
+
+//setter pin x til ground
+//hvis i=0, P40 (X left) til GND
+//hvis i=1, PB0 (Y down) til GND
+void set_pin_gnd(int i)
+{
+    GPIO_InitTypeDef GPIO_InitStruct = {0};
+
+    if(i==0){
+    	GPIO_InitStruct.Pin = XL_Pin;
+    }else{
+    	GPIO_InitStruct.Pin = YD_Pin;
+
+    }
+    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+
+    if(i==0){
+        HAL_GPIO_Init(XL_GPIO_Port, &GPIO_InitStruct);
+        HAL_GPIO_WritePin(XL_GPIO_Port, XL_Pin, GPIO_PIN_SET);
+    }else{
+        HAL_GPIO_Init(YD_GPIO_Port, &GPIO_InitStruct);
+        HAL_GPIO_WritePin(YD_GPIO_Port, YD_Pin, GPIO_PIN_SET);
+    }
+
+}
+
+//setter xleft og ydown til høy resistans,dvs not connected
+void set_pin_hi_z(int i)
+{
+    GPIO_InitTypeDef GPIO_InitStruct = {0};
+
+    if(i==0){
+    	GPIO_InitStruct.Pin = XL_Pin;
+    }else{
+    	GPIO_InitStruct.Pin = YD_Pin;
+
+    }
+    GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+
+    if(i==0){
+        HAL_GPIO_Init(XL_GPIO_Port, &GPIO_InitStruct);
+    }else{
+        HAL_GPIO_Init(YD_GPIO_Port, &GPIO_InitStruct);
+    }
+
+}
+
+
 
 void touchscreen_thread_func(){
 
