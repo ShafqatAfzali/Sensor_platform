@@ -2,34 +2,26 @@
 #include "cmsis_os2.h"
 #include <stddef.h>
 #include "mytouch.h"
+#include "print.h"
 #include "adc.h"
 #include "dma.h"
 #include "gpio.h"
 
-pinstate XR_state;
-pinstate XL_state;
-pinstate YU_state;
-pinstate YD_state;
-
-
-osThreadId_t touchscreen_thread_id;
-
 
 //skal bruke ADC1 med channel 0 for XR --> PA0
-#define XR_Pin GPIO_PIN_0
-#define XR_GPIO_Port GPIOA
-//skal bruke ADC1 med channel 1 for YU --> PA1
-#define YU_Pin GPIO_PIN_1
-#define YU_GPIO_Port GPIOA
+//skal bruke ADC2 med channel 1 for YU --> PA1
 
-//skal bruke den som er under på development board som XL --> PA4
-#define XL_Pin GPIO_PIN_4
-#define XL_GPIO_Port GPIOA
-//skal bruke den som er under på development board som YD --> PB0
-#define YD_Pin GPIO_PIN_0
-#define YD_GPIO_Port GPIOB
+//skal bruke XL --> PA6
+//skal bruke YD --> PA7
 
 
+//skal bruke reading_xy til å informere om funksjonen leser x eller y
+int reading_xy;
+uint32_t xbuff[20]={0};
+uint32_t ybuff[20]={0};
+
+osThreadId_t touchscreen_thread_id;
+osEventFlagsId_t touch_flag;
 //aktiverer pin x til adc
 //hvis i=0, PA0 (channel 0)
 //hvis i=1, PA1 (channel 1)
@@ -72,10 +64,10 @@ void set_pin_vcc(int i)
 
     if(i==0){
         HAL_GPIO_Init(XR_GPIO_Port, &GPIO_InitStruct);
-        HAL_GPIO_WritePin(XR_GPIO_Port, XR_Pin, GPIO_PIN_SET);
+        HAL_GPIO_WritePin(XR_GPIO_Port, XR_Pin, 1);
     }else{
         HAL_GPIO_Init(YU_GPIO_Port, &GPIO_InitStruct);
-        HAL_GPIO_WritePin(YU_GPIO_Port, YU_Pin, GPIO_PIN_SET);
+        HAL_GPIO_WritePin(YU_GPIO_Port, YU_Pin, 1);
     }
 
 }
@@ -100,10 +92,10 @@ void set_pin_gnd(int i)
 
     if(i==0){
         HAL_GPIO_Init(XL_GPIO_Port, &GPIO_InitStruct);
-        HAL_GPIO_WritePin(XL_GPIO_Port, XL_Pin, GPIO_PIN_SET);
+        HAL_GPIO_WritePin(XL_GPIO_Port, XL_Pin, 0);
     }else{
         HAL_GPIO_Init(YD_GPIO_Port, &GPIO_InitStruct);
-        HAL_GPIO_WritePin(YD_GPIO_Port, YD_Pin, GPIO_PIN_SET);
+        HAL_GPIO_WritePin(YD_GPIO_Port, YD_Pin, 0);
     }
 
 }
@@ -130,12 +122,79 @@ void set_pin_hi_z(int i)
 
 }
 
+uint16_t avg(uint32_t *arr){
+	uint32_t sum=0;
+	for(int i=0; i<20; i++){
+		sum+=arr[i];
+	}
+	uint16_t average=(uint16_t)(sum/20);
+	return average;
+}
+
+
+void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc){
+	if(hadc == &hadc1){
+		osEventFlagsSet(touch_flag, 0x01);
+	}else if(hadc == &hadc2){
+		osEventFlagsSet(touch_flag, 0x02);
+	}
+}
 
 
 void touchscreen_thread_func(){
-
+	print("running touch thread\n");
+	reading_xy=0;
 	while(1){
+		print("in touch thread loop\n");
 
+		if(reading_xy==0){
+			print("in reading x value if\n");
+
+			//leser x verdi
+
+			//setter YU til VCC
+			set_pin_vcc(1);
+			print("set yu pin to vcc\n");
+			//setter YD til ground
+			set_pin_gnd(1);
+			print("set yd pin to gnd\n");
+			//setter XL til no connect
+			set_pin_hi_z(0);
+			print("xl pin to high imp\n");
+			//setter XR til å ta 20 samples fra ADC
+			set_pin_adc(0);
+			print("set xr pin to adc\n");
+			osDelay(1);
+			//starter dma 1 (normal mode) (ta 20 samples)
+			HAL_ADC_Start_DMA(&hadc1, xbuff, 20);
+			print("started dma in x\n");
+
+			//etter 20 samples er tatt, ta average
+			print("waiting for flag in x\n");
+			osEventFlagsWait(touch_flag, 0x01, osFlagsWaitAny, osWaitForever);
+			print("flag set in x\n");
+			uint16_t xavg=avg(xbuff);
+			print("average x: %d", xavg);
+			//les y verdien deretter
+			reading_xy=1;
+
+		}else{
+			print("in reading y value if\n");
+			//leser y verdi samme som før
+			//men bare motsatt for x og y pinnene
+			set_pin_vcc(0);
+			set_pin_gnd(0);
+			set_pin_hi_z(1);
+			set_pin_adc(1);
+			osDelay(1);
+			HAL_ADC_Start_DMA(&hadc2, ybuff, 20);
+
+			//samme som for x
+			osEventFlagsWait(touch_flag, 0x02, osFlagsWaitAny, osWaitForever);
+			uint16_t yavg=avg(ybuff);
+			print("average y: %d", yavg);
+			reading_xy=0;
+		}
 
 
 
@@ -147,6 +206,9 @@ void touchscreen_thread_func(){
 
 
 void touchscreen_INIT(){
+	print("about to create touch thread\n");
+
+	touch_flag=osEventFlagsNew(NULL);
 
     const osThreadAttr_t touchscreen_thread_attr = {
         .name = "touchscreen_thread",
@@ -155,6 +217,8 @@ void touchscreen_INIT(){
     };
 
     touchscreen_thread_id = osThreadNew(touchscreen_thread_func, NULL, &touchscreen_thread_attr);
+
+	print("created touch thread\n");
 
 
 }

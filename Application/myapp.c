@@ -11,17 +11,18 @@
 #include "display_driver.h"
 #include "spi.h"
 #include "lvgl_send.h"
+#include "mytouch.h"
 
 
 
-void myapp(void)
-{
+void myapp(){
 	print("process stating\n");
 	lvgl_thread_INIT();
     detect_INIT();
     light_sens_INIT();
     accelerometer_INIT();
     temp_sens_INIT();
+    touchscreen_INIT();
 }
 
 

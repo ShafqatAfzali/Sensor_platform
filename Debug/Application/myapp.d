@@ -486,7 +486,8 @@ Application/myapp.o: ../Application/myapp.c ../Core/Inc/main.h \
  C:/Users/shafg/Desktop/Projects_Firmware/sensor_platform/Middlewares/lvgl_lib/src/lv_api_map_v9_1.h \
  C:/Users/shafg/Desktop/Projects_Firmware/sensor_platform/Middlewares/lvgl_lib/src/lv_api_map_v9_2.h \
  C:/Users/shafg/Desktop/Projects_Firmware/sensor_platform/Middlewares/lvgl_lib/src/lv_api_map_v9_3.h \
- C:/Users/shafg/Desktop/Projects_Firmware/sensor_platform/Middlewares/lvgl_lib/src/lv_api_map_v9_4.h
+ C:/Users/shafg/Desktop/Projects_Firmware/sensor_platform/Middlewares/lvgl_lib/src/lv_api_map_v9_4.h \
+ ../Application/mytouch.h
 ../Core/Inc/main.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
 ../Core/Inc/stm32f4xx_hal_conf.h:
@@ -982,3 +983,4 @@ C:/Users/shafg/Desktop/Projects_Firmware/sensor_platform/Middlewares/lvgl_lib/sr
 C:/Users/shafg/Desktop/Projects_Firmware/sensor_platform/Middlewares/lvgl_lib/src/lv_api_map_v9_2.h:
 C:/Users/shafg/Desktop/Projects_Firmware/sensor_platform/Middlewares/lvgl_lib/src/lv_api_map_v9_3.h:
 C:/Users/shafg/Desktop/Projects_Firmware/sensor_platform/Middlewares/lvgl_lib/src/lv_api_map_v9_4.h:
+../Application/mytouch.h:
