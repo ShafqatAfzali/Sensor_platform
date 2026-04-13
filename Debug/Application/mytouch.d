@@ -34,8 +34,8 @@ Application/mytouch.o: ../Application/mytouch.c ../Core/Inc/main.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h \
- ../Application/mytouch.h ../Application/print.h ../Core/Inc/adc.h \
- ../Core/Inc/main.h ../Core/Inc/dma.h ../Core/Inc/gpio.h
+ ../Core/Inc/adc.h ../Core/Inc/main.h ../Core/Inc/gpio.h \
+ ../Core/Inc/tim.h ../Application/print.h
 ../Core/Inc/main.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
 ../Core/Inc/stm32f4xx_hal_conf.h:
@@ -72,9 +72,8 @@ Application/mytouch.o: ../Application/mytouch.c ../Core/Inc/main.h \
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h:
 ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h:
-../Application/mytouch.h:
-../Application/print.h:
 ../Core/Inc/adc.h:
 ../Core/Inc/main.h:
-../Core/Inc/dma.h:
 ../Core/Inc/gpio.h:
+../Core/Inc/tim.h:
+../Application/print.h:

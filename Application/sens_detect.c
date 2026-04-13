@@ -53,13 +53,13 @@ void detect_thread_func(){
 					detected_status = HAL_I2C_IsDeviceReady(&hi2c1, sens_obj_arr[i].sensor_addr << 1, 2, 100);
 						//hvis aktivert, setter flagg, deaktiverer deteksjon og slipper semafor
 						if (detected_status == HAL_OK){
-							print("device %s is alive\n", sens_obj_arr[i].sensor_name);
+							//print("device %s is alive\n", sens_obj_arr[i].sensor_name);
 							osEventFlagsSet(sensors_flag_id, sens_obj_arr[i].flagg);
 							sens_detection_state=false;
 							break;
 						} else {
 							//hvis ikke setter flagg og releaser mutex, slik at deteksjon kjører fortsatt
-							print("not sensor found\n");
+							//print("not sensor found\n");
 						    HAL_I2C_DeInit(&hi2c1);
 						    osDelay(50);
 						    HAL_I2C_Init(&hi2c1);

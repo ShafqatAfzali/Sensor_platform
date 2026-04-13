@@ -1,8 +1,0 @@
-../Application/mytouch.c:28:6:set_pin_adc	3
-../Application/mytouch.c:51:6:set_pin_vcc	3
-../Application/mytouch.c:79:6:set_pin_gnd	3
-../Application/mytouch.c:104:6:set_pin_hi_z	3
-../Application/mytouch.c:125:10:avg	2
-../Application/mytouch.c:135:6:HAL_ADC_ConvCpltCallback	3
-../Application/mytouch.c:144:6:touchscreen_thread_func	2
-../Application/mytouch.c:208:6:touchscreen_INIT	1
