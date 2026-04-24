@@ -16,8 +16,9 @@
 
 
 void myapp(){
-	print("process stating\n");
+	print("process stating 2\n");
 	lvgl_thread_INIT();
+	//display_INIT();
     detect_INIT();
     light_sens_INIT();
     accelerometer_INIT();

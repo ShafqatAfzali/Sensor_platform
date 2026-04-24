@@ -1,10 +1,10 @@
 #include "light_sens.h"
 #include "print.h"
 #include "sens_detect.h"
+#include "controller.h"
 #include "i2c.h"
 #include "cmsis_os2.h"
 #include <stdbool.h>
-#include "lvgl_send.h"
 #include <string.h>
 
 //0x20 for write
@@ -38,7 +38,7 @@ osThreadId_t lightsens_thread_id;
 
 HAL_StatusTypeDef config_transmit_status;
 
-changed_sens_obj msg;
+sens_obj msg;
 
 
 void light_sens_config(){
@@ -110,12 +110,11 @@ void light_sens_thread_func(){
 					uint32_t output_mlux = (light_sens_output * 168) / 10;
 					print("iluminance: %d mLux\n", output_mlux);
 
-					strcpy(msg.sens_type, "light");
-					msg.sens_data[0] = output_mlux;
-					msg.sens_data[1] = 0;
-					msg.sens_data[2] = 0;
 
-					osMessageQueuePut(msg_queue_get(), &msg, 0,0);
+					strcpy(msg.sens_type, "light");
+					msg.sens_data= output_mlux;
+
+					osMessageQueuePut(sens_msg_queue_get(), &msg, 0,0);
 				} else {
 					print("I2C receive failed\n");
 					//aktiverer detekajon og deaktiverer thread while loop
@@ -125,12 +124,12 @@ void light_sens_thread_func(){
 					osEventFlagsSet(get_flag_id(), 0x08);
 					light_sens_active=false;
 
-					strcpy(msg.sens_type, "no sensor");
-					msg.sens_data[0] = 0;
-					msg.sens_data[1] = 0;
-					msg.sens_data[2] = 0;
 
-					osMessageQueuePut(msg_queue_get(), &msg, 0,0);
+					strcpy(msg.sens_type, "no sensor");
+					msg.sens_data = 0;
+
+					osMessageQueuePut(sens_msg_queue_get(), &msg, 0,0);
+
 				}
 
 			}else{print("\n light sensor didnt recieve mutex");}

@@ -179,6 +179,9 @@ void display_set_img(img_obj *this_img)
 	}
 }
 
+/*
+uint8_t imgbuff[total_display_bytes]={0};
+
 void display_test_single_color(uint16_t color) {
     img_obj myimg;
     myimg.pixels = imgbuff;
@@ -193,7 +196,7 @@ void display_test_single_color(uint16_t color) {
     }
 
     display_set_img(&myimg);
-}
+}*/
 
 void display_config(){
 	//resetter
@@ -230,6 +233,7 @@ void display_config(){
 }
 
 
+/*
 void display_test_thread(){
 	display_config();
 
@@ -256,7 +260,7 @@ void display_INIT(){
     osThreadNew(display_test_thread, NULL, &display_thread_attr);
 
 }
-
+*/
 
 
 

@@ -1,3 +1,3 @@
 ../Application/temp_sens.c:23:6:temp_config	24	static
 ../Application/temp_sens.c:50:6:temp_thread_func	56	static
-../Application/temp_sens.c:129:6:temp_sens_INIT	48	static
+../Application/temp_sens.c:125:6:temp_sens_INIT	48	static

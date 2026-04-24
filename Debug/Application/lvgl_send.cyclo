@@ -1,5 +1,0 @@
-../Application/lvgl_send.c:17:6:my_flush_cb	2
-../Application/lvgl_send.c:44:6:lvgl_thread	4
-../Application/lvgl_send.c:106:6:lv_tick_thread	1
-../Application/lvgl_send.c:114:6:lvgl_thread_INIT	1
-../Application/lvgl_send.c:130:20:msg_queue_get	1

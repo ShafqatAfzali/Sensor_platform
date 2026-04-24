@@ -1,10 +1,10 @@
 #include "temp_sens.h"
 #include "print.h"
 #include "sens_detect.h"
+#include "controller.h"
 #include "i2c.h"
 #include "cmsis_os2.h"
 #include <stdbool.h>
-#include "lvgl_send.h"
 #include <string.h>
 #include <float.h>
 
@@ -17,7 +17,7 @@ HAL_StatusTypeDef temp_sen_status;
 bool temp_sens_active;
 osThreadId_t temp_sens_thread_id;
 
-changed_sens_obj temp_msg;
+sens_obj temp_msg;
 
 
 void temp_config(){
@@ -93,11 +93,9 @@ void temp_thread_func(){
 				    //might use himidity later if i want
 					strcpy(temp_msg.sens_type, "temperature");
 					//for å beholde desimalene ganger med 100
-					temp_msg.sens_data[0] = (int32_t)(temperature*100);
-					temp_msg.sens_data[1] = (int32_t)(humidity*100);
-					temp_msg.sens_data[2] = 0;
+					temp_msg.sens_data = (int32_t)(temperature*100);
 
-					osMessageQueuePut(msg_queue_get(), &temp_msg, 0,0);
+					osMessageQueuePut(sens_msg_queue_get(), &temp_msg, 0,0);
 			    }else{
 					print("I2C transmitt failed for temp\n");
 					//samme som i de andre sensor threads
@@ -108,10 +106,8 @@ void temp_thread_func(){
 					temp_sens_active=false;
 
 					strcpy(temp_msg.sens_type, "no sensor");
-					temp_msg.sens_data[0] = 0;
-					temp_msg.sens_data[1] = 0;
-					temp_msg.sens_data[2] = 0;
-					osMessageQueuePut(msg_queue_get(), &temp_msg, 0,0);
+					temp_msg.sens_data = 0;
+					osMessageQueuePut(sens_msg_queue_get(), &temp_msg, 0,0);
 			    }
 
 			}

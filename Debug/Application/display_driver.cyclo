@@ -18,7 +18,4 @@
 ../Application/display_driver.c:127:6:display_set_columns	1
 ../Application/display_driver.c:140:6:display_set_rows	1
 ../Application/display_driver.c:156:6:display_set_img	2
-../Application/display_driver.c:182:6:display_test_single_color	2
-../Application/display_driver.c:198:6:display_config	1
-../Application/display_driver.c:233:6:display_test_thread	1
-../Application/display_driver.c:248:6:display_INIT	1
+../Application/display_driver.c:201:6:display_config	1

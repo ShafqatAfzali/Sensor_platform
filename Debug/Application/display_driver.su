@@ -18,7 +18,4 @@
 ../Application/display_driver.c:127:6:display_set_columns	24	static
 ../Application/display_driver.c:140:6:display_set_rows	24	static
 ../Application/display_driver.c:156:6:display_set_img	24	static
-../Application/display_driver.c:182:6:display_test_single_color	32	static
-../Application/display_driver.c:198:6:display_config	8	static
-../Application/display_driver.c:233:6:display_test_thread	8	static
-../Application/display_driver.c:248:6:display_INIT	48	static
+../Application/display_driver.c:201:6:display_config	8	static

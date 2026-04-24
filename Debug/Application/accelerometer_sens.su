@@ -1,4 +1,4 @@
-../Application/accelerometer_sens.c:49:6:I2C_accelerometer_transmit	32	static
-../Application/accelerometer_sens.c:66:6:accelerometer_config	16	static
-../Application/accelerometer_sens.c:109:6:accelormeter_thread_func	72	static
-../Application/accelerometer_sens.c:196:6:accelerometer_INIT	48	static
+../Application/accelerometer_sens.c:48:6:I2C_accelerometer_transmit	32	static
+../Application/accelerometer_sens.c:65:6:accelerometer_config	16	static
+../Application/accelerometer_sens.c:108:6:accelormeter_thread_func	72	static
+../Application/accelerometer_sens.c:203:6:accelerometer_INIT	48	static

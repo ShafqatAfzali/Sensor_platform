@@ -4,12 +4,15 @@
 #include "gpio.h"
 #include "tim.h"
 #include "print.h"
+#include "controller.h"
 
 //skal bruke reading_xy til å informere om funksjonen leser x eller y
 int reading_xy;
 
 osThreadId_t touchscreen_thread_id;
 static ADC_ChannelConfTypeDef sConfig;
+
+touch_obj touch_msg;
 
 //aktiverer pin x til adc
 //hvis i=0, PA0 (channel 0)
@@ -126,8 +129,7 @@ uint16_t avg(uint32_t *arr){
 	return average;
 }
 
-/*
-uint16_t pixel_touch_x(uint32_t *milli_volt){
+uint32_t pixel_touch_x(uint32_t *milli_volt){
 	//(max -min)/pixels = 3300-700=2600 /120
 	uint32_t delta_x=2600/120;
 	uint32_t touch_x=milli_volt/delta_x;
@@ -135,13 +137,13 @@ uint16_t pixel_touch_x(uint32_t *milli_volt){
 
 }
 
-uint16_t pixel_touch_y(uint32_t *milli_volt){
+uint32_t pixel_touch_y(uint32_t *milli_volt){
 	//(max -min)/pixels = 3300-700=2600 /120
 	uint32_t delta_y=2600/160;
 	uint32_t touch_y=milli_volt/delta_y;
 	return touch_y;
 }
-*/
+
 
 
 void touchscreen_thread_func(){
@@ -208,18 +210,18 @@ void touchscreen_thread_func(){
 		avg_y=sum_y/20;
 		//print("avg_y: %d\n", avg_y);
 
-		/*
-		uint32_t touch_x=pixel_touch_x(avg_x);
-		uint32_t touch_y=pixel_touch_x(avg_y);
-		*/
+
+		touch_msg.touched_x=pixel_touch_x(avg_x);
+		touch_msg.touched_y=pixel_touch_y(avg_y);
+
+		//sender touch data til controller
+		osMessageQueuePut(touch_msg_queue_get(), &touch_msg, 0,0);
+
 		osDelay(50);
 	}
 
 
 }
-
-
-
 
 void touchscreen_INIT(){
 	print("about to create touch thread\n");

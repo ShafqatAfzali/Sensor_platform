@@ -450,7 +450,7 @@ Application/lvgl_send.o: ../Application/lvgl_send.c \
  C:/Users/shafg/Desktop/Projects_Firmware/sensor_platform/Middlewares/lvgl_lib/src/lv_api_map_v9_4.h \
  ../Application/display_driver.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h \
- ../Application/print.h
+ ../Application/print.h ../Application/controller.h
 ../Application/lvgl_send.h:
 C:/Users/shafg/Desktop/Projects_Firmware/sensor_platform/Middlewares/lvgl_lib/lvgl.h:
 C:/Users/shafg/Desktop/Projects_Firmware/sensor_platform/Middlewares/lvgl_lib/lv_version.h:
@@ -903,3 +903,4 @@ C:/Users/shafg/Desktop/Projects_Firmware/sensor_platform/Middlewares/lvgl_lib/sr
 ../Application/display_driver.h:
 ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h:
 ../Application/print.h:
+../Application/controller.h:

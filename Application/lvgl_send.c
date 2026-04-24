@@ -1,6 +1,7 @@
 #include "lvgl_send.h"
 #include "lvgl.h"
 #include "print.h"
+#include "controller.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -8,10 +9,7 @@ uint8_t imgbuff[total_display_bytes/5];
 
 img_obj img_to_send;
 
-changed_sens_obj my_sens_obj;
-
-osMessageQueueId_t sensor_queue;
-
+update_image_obj update_img_obj;
 
 
 void my_flush_cb(lv_display_t * disp, const lv_area_t * area, uint8_t * px_buf)
@@ -69,28 +67,28 @@ void lvgl_thread(){
 	while(1){
         lv_timer_handler();
 
-    	if(osMessageQueueGet(sensor_queue, &my_sens_obj, NULL, 0) == osOK) {
+    	if(osMessageQueueGet(img_msg_queue_get(), &update_img_obj, NULL, 0) == osOK) {
     		print("fikk sensor data\n");
 
-            lv_label_set_text(sensor_label, my_sens_obj.sens_type);
+            lv_label_set_text(sensor_label, update_img_obj.sens_type);
 
-            if(strcmp(my_sens_obj.sens_type, "acceleration") == 0){
+            if(strcmp(update_img_obj.sens_type, "acceleration") == 0){
 
         		char newstr[100];
 
         		snprintf(newstr, sizeof(newstr), "X=%.1f Y=%.1f Z=%.1f", (float)my_sens_obj.sens_data[0],
-						(float)my_sens_obj.sens_data[1],
-						(float)my_sens_obj.sens_data[2]);
+						(float)update_img_obj.sens_data[1],
+						(float)update_img_obj.sens_data[2]);
 
                 lv_label_set_text(sensor_value, newstr);
 
 
-        	} else if(strcmp(my_sens_obj.sens_type, "no sensor") == 0){
+        	} else if(strcmp(update_img_obj.sens_type, "no sensor") == 0){
         		char buf[32]="NAN";
         		lv_label_set_text(sensor_value, buf);
         	}else{
         		char buf[32];
-        		snprintf(buf, sizeof(buf), "%.1f", (float)my_sens_obj.sens_data[0]);
+        		snprintf(buf, sizeof(buf), "%.1f", (float)update_img_obj.sens_data[0]);
         		lv_label_set_text(sensor_value, buf);
         	}
 
@@ -113,8 +111,6 @@ void lv_tick_thread(void *arg) {
 
 void lvgl_thread_INIT(){
 
-	sensor_queue = osMessageQueueNew(1, sizeof(changed_sens_obj), NULL);
-
     const osThreadAttr_t lvgl_thread_attr = {
         .name = "lvgl_thread",
 		.stack_size = 14000,
@@ -127,6 +123,5 @@ void lvgl_thread_INIT(){
     osThreadNew(lv_tick_thread, NULL, NULL);
 }
 
-osMessageQueueId_t msg_queue_get(){
-	return sensor_queue;
-}
+
+

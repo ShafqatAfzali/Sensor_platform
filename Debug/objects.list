@@ -1,4 +1,5 @@
 "./Application/accelerometer_sens.o"
+"./Application/controller.o"
 "./Application/display_driver.o"
 "./Application/light_sens.o"
 "./Application/lvgl_send.o"
