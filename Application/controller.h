@@ -1,6 +1,8 @@
 #ifndef controller_
 #define controller_
 #include "main.h"
+#include "cmsis_os2.h"
+
 
 typedef struct{
 	//which sensor that was just plugged in (ie which sensor was detected)
@@ -29,7 +31,7 @@ typedef struct{
 } touch_obj;
 
 
-osMessageQueueId_t sen_msg_queue_get();
+osMessageQueueId_t sens_msg_queue_get();
 
 osMessageQueueId_t img_msg_queue_get();
 

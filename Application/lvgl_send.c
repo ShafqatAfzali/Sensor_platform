@@ -72,23 +72,12 @@ void lvgl_thread(){
 
             lv_label_set_text(sensor_label, update_img_obj.sens_type);
 
-            if(strcmp(update_img_obj.sens_type, "acceleration") == 0){
-
-        		char newstr[100];
-
-        		snprintf(newstr, sizeof(newstr), "X=%.1f Y=%.1f Z=%.1f", (float)my_sens_obj.sens_data[0],
-						(float)update_img_obj.sens_data[1],
-						(float)update_img_obj.sens_data[2]);
-
-                lv_label_set_text(sensor_value, newstr);
-
-
-        	} else if(strcmp(update_img_obj.sens_type, "no sensor") == 0){
+            if(strcmp(update_img_obj.sens_type, "no sensor") == 0){
         		char buf[32]="NAN";
         		lv_label_set_text(sensor_value, buf);
         	}else{
         		char buf[32];
-        		snprintf(buf, sizeof(buf), "%.1f", (float)update_img_obj.sens_data[0]);
+        		snprintf(buf, sizeof(buf), "%.1f", (float)update_img_obj.sens_data);
         		lv_label_set_text(sensor_value, buf);
         	}
 

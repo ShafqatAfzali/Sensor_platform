@@ -129,7 +129,7 @@ uint16_t avg(uint32_t *arr){
 	return average;
 }
 
-uint32_t pixel_touch_x(uint32_t *milli_volt){
+uint32_t pixel_touch_x(uint32_t milli_volt){
 	//(max -min)/pixels = 3300-700=2600 /120
 	uint32_t delta_x=2600/120;
 	uint32_t touch_x=milli_volt/delta_x;
@@ -137,7 +137,7 @@ uint32_t pixel_touch_x(uint32_t *milli_volt){
 
 }
 
-uint32_t pixel_touch_y(uint32_t *milli_volt){
+uint32_t pixel_touch_y(uint32_t milli_volt){
 	//(max -min)/pixels = 3300-700=2600 /120
 	uint32_t delta_y=2600/160;
 	uint32_t touch_y=milli_volt/delta_y;
@@ -213,6 +213,13 @@ void touchscreen_thread_func(){
 
 		touch_msg.touched_x=pixel_touch_x(avg_x);
 		touch_msg.touched_y=pixel_touch_y(avg_y);
+
+		uint32_t touched_x=pixel_touch_x(avg_x);
+		uint32_t touched_y=pixel_touch_y(avg_y);
+
+		print("X touch: %d\n", touched_x);
+		print("Y touch: %d\n", touched_y);
+
 
 		//sender touch data til controller
 		osMessageQueuePut(touch_msg_queue_get(), &touch_msg, 0,0);

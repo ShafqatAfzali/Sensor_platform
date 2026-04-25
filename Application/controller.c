@@ -1,6 +1,8 @@
 #include "controller.h"
 #include "cmsis_os2.h"
 #include "display_driver.h"
+#include <string.h>
+
 
 osMessageQueueId_t img_queue;
 osMessageQueueId_t sensor_queue;
@@ -28,13 +30,13 @@ void controller_thread(){
 
 		//sjekker hvilken button/slider som ble trykket
 		if(osMessageQueueGet(touch_queue, &controller_touch_msg, NULL, 0) == osOK){
-			//her skjer all kontrollen (ie slå av skjerm, send data, lysstyrke)
+			//her skjer all kontrollen (ie slå av skjerm, send data)
 
-			//må vite button posisjonene for å enable
-			//for eksempel hvis skru av skjerm er (x:120-140 og y:20-60)
+
+			//for eksempel hvis skru av skjerm er (x:30-50 og y:20-60)
 			if(
-					controller_touch_msg.touched_x<120 &&
-					controller_touch_msg.touched_x>110 &&
+					controller_touch_msg.touched_x<50 &&
+					controller_touch_msg.touched_x>30 &&
 					controller_touch_msg.touched_y<60 &&
 					controller_touch_msg.touched_y>20
 
@@ -46,22 +48,46 @@ void controller_thread(){
 					display_on();
 					display_state=1;
 				}
+				//antar at sens data knappen er (x:70-90 og y:20-60)
+			}else if(
+					controller_touch_msg.touched_x<90 &&
+					controller_touch_msg.touched_x>70 &&
+					controller_touch_msg.touched_y<60 &&
+					controller_touch_msg.touched_y>20
+			){
+				if(display_data==1){
+					display_data=0;
+				}else{
+					display_data=1;
+				}
 			}
 
-			//samme for power mode og display data
+
 
 		}
 
 		if(display_data==1){
 
-			if(osMessageQueueGet(sens_queue, &controller_sens_msg, NULL, 0) == osOK){
+			if(osMessageQueueGet(sensor_queue, &controller_sens_msg, NULL, 0) == osOK){
 
-				controller_img_msg.sens_type=controller_sens_msg.sens_type;
+				strcpy(controller_img_msg.sens_type, controller_sens_msg.sens_type);
+
 				controller_img_msg.sens_data=controller_sens_msg.sens_data;
-				controller_img_msg.touched_x=controller_touch_msg.touched_x;
-				controller_img_msg.touched_y=controller_touch_msg.touched_y;
+				controller_img_msg.touched_x = controller_touch_msg.touched_x;
+				controller_img_msg.touched_y = controller_touch_msg.touched_y;
+				osMessageQueuePut(img_queue, &controller_img_msg, 0,0);
+
 
 			}
+
+		}else{
+
+			strcpy(controller_img_msg.sens_type, "Not Displaying");
+			controller_sens_msg.sens_data=0;
+			controller_img_msg.touched_x = controller_touch_msg.touched_x;
+			controller_img_msg.touched_y = controller_touch_msg.touched_y;
+
+			osMessageQueuePut(img_queue, &controller_img_msg, 0,0);
 
 		}
 
@@ -84,7 +110,7 @@ void controller_INIT(){
 
 	sensor_queue = osMessageQueueNew(1, sizeof(controller_sens_msg), NULL);
 
-	touch_queue = osMessageQueueNew(1, sizeof(controller_img_msg), NULL);
+	touch_queue = osMessageQueueNew(1, sizeof(controller_touch_msg), NULL);
 
 	osThreadAttr_t controller_thread_attr = {
 	    .name = "controller_thread",
