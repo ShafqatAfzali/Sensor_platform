@@ -1,5 +1,5 @@
-../Application/controller.c:26:6:controller_thread	14
-../Application/controller.c:103:6:controller_INIT	1
-../Application/controller.c:126:20:img_msg_queue_get	1
-../Application/controller.c:130:20:sens_msg_queue_get	1
-../Application/controller.c:134:20:touch_msg_queue_get	1
+../Application/controller.c:27:6:controller_thread	14
+../Application/controller.c:107:6:controller_INIT	1
+../Application/controller.c:130:20:img_msg_queue_get	1
+../Application/controller.c:134:20:sens_msg_queue_get	1
+../Application/controller.c:138:20:touch_msg_queue_get	1

@@ -12,6 +12,7 @@
 #include "spi.h"
 #include "lvgl_send.h"
 #include "mytouch.h"
+#include "controller.h"
 
 
 
@@ -24,6 +25,7 @@ void myapp(){
     accelerometer_INIT();
     temp_sens_INIT();
     touchscreen_INIT();
+    controller_INIT();
 }
 
 

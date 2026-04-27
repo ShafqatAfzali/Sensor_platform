@@ -2,6 +2,7 @@
 #include "cmsis_os2.h"
 #include "display_driver.h"
 #include <string.h>
+#include "print.h"
 
 
 osMessageQueueId_t img_queue;
@@ -32,9 +33,12 @@ void controller_thread(){
 		if(osMessageQueueGet(touch_queue, &controller_touch_msg, NULL, 0) == osOK){
 			//her skjer all kontrollen (ie slå av skjerm, send data)
 
+			print("X touch: %d\n", controller_touch_msg.touched_x);
+			print("Y touch: %d\n", controller_touch_msg.touched_y);
 
 			//for eksempel hvis skru av skjerm er (x:30-50 og y:20-60)
 			if(
+
 					controller_touch_msg.touched_x<50 &&
 					controller_touch_msg.touched_x>30 &&
 					controller_touch_msg.touched_y<60 &&

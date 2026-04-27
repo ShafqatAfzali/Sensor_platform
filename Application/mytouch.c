@@ -129,21 +129,24 @@ uint16_t avg(uint32_t *arr){
 	return average;
 }
 
-uint32_t pixel_touch_x(uint32_t milli_volt){
-	//(max -min)/pixels = 3300-700=2600 /120
-	uint32_t delta_x=2600/120;
-	uint32_t touch_x=milli_volt/delta_x;
-	return touch_x;
-
-}
 
 uint32_t pixel_touch_y(uint32_t milli_volt){
-	//(max -min)/pixels = 3300-700=2600 /120
-	uint32_t delta_y=2600/160;
-	uint32_t touch_y=milli_volt/delta_y;
+	//600mV på 0 og 3300mV på 160
+	uint32_t delta_mV=milli_volt-600;
+	//3300-600=2700
+	uint32_t delta_y=2700/160;
+	uint32_t touch_y=delta_mV/delta_y;
 	return touch_y;
 }
 
+uint32_t pixel_touch_x(uint32_t milli_volt){
+	uint32_t delta_mV=milli_volt-600;
+	//3300-600=2700
+	uint32_t delta_x=2700/160;
+	uint32_t touch_x=delta_mV/delta_x;
+	return touch_x;
+
+}
 
 
 void touchscreen_thread_func(){
@@ -217,8 +220,8 @@ void touchscreen_thread_func(){
 		uint32_t touched_x=pixel_touch_x(avg_x);
 		uint32_t touched_y=pixel_touch_y(avg_y);
 
-		print("X touch: %d\n", touched_x);
-		print("Y touch: %d\n", touched_y);
+		//print("X touch: %d\n", touched_x);
+		//print("Y touch: %d\n", touched_y);
 
 
 		//sender touch data til controller

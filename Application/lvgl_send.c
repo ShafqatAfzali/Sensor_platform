@@ -34,7 +34,7 @@ void my_flush_cb(lv_display_t * disp, const lv_area_t * area, uint8_t * px_buf)
 
 	display_set_img(&img_to_send);
     lv_display_flush_ready(disp);
-	print("flushed\n");
+	//print("flushed\n");
 	osDelay(1);
 
 }
@@ -62,20 +62,29 @@ void lvgl_thread(){
 	lv_obj_align(sensor_value, LV_ALIGN_TOP_MID, 0, 100);
 
 
-	print("kjører lvgl nå\n");
+	//print("kjører lvgl nå\n");
 
 	while(1){
         lv_timer_handler();
 
     	if(osMessageQueueGet(img_msg_queue_get(), &update_img_obj, NULL, 0) == osOK) {
-    		print("fikk sensor data\n");
+    		//print("fikk sensor data\n");
 
             lv_label_set_text(sensor_label, update_img_obj.sens_type);
 
             if(strcmp(update_img_obj.sens_type, "no sensor") == 0){
         		char buf[32]="NAN";
         		lv_label_set_text(sensor_value, buf);
+        	}else if(strcmp(update_img_obj.sens_type, "Not Displaying") == 0){
+        		char buf1[32]="-----";
+        		lv_label_set_text(function_label, buf1);
+
+        		char buf[32]="NAN";
+        		lv_label_set_text(sensor_value, buf);
         	}else{
+        		char buf1[32]="showing";
+        		lv_label_set_text(function_label, buf1);
+
         		char buf[32];
         		snprintf(buf, sizeof(buf), "%.1f", (float)update_img_obj.sens_data);
         		lv_label_set_text(sensor_value, buf);
