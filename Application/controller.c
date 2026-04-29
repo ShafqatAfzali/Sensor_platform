@@ -39,10 +39,10 @@ void controller_thread(){
 			//for eksempel hvis skru av skjerm er (x:30-50 og y:20-60)
 			if(
 
-					controller_touch_msg.touched_x<50 &&
-					controller_touch_msg.touched_x>30 &&
-					controller_touch_msg.touched_y<60 &&
-					controller_touch_msg.touched_y>20
+					controller_touch_msg.touched_x<100 &&
+					controller_touch_msg.touched_x>20 &&
+					controller_touch_msg.touched_y<40 &&
+					controller_touch_msg.touched_y>0
 
 			){
 				if(display_state==1){
@@ -54,10 +54,10 @@ void controller_thread(){
 				}
 				//antar at sens data knappen er (x:70-90 og y:20-60)
 			}else if(
-					controller_touch_msg.touched_x<90 &&
-					controller_touch_msg.touched_x>70 &&
-					controller_touch_msg.touched_y<60 &&
-					controller_touch_msg.touched_y>20
+					controller_touch_msg.touched_x<100 &&
+					controller_touch_msg.touched_x>20 &&
+					controller_touch_msg.touched_y<80 &&
+					controller_touch_msg.touched_y>40
 			){
 				if(display_data==1){
 					display_data=0;
