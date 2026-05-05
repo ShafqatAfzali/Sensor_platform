@@ -213,8 +213,7 @@ Middlewares/lvgl_lib/src/core/lv_refr.o: \
  ../Middlewares/lvgl_lib/src/core/../debugging/test/lv_test_private.h \
  ../Middlewares/lvgl_lib/src/core/../debugging/test/../../lv_conf_internal.h \
  ../Middlewares/lvgl_lib/src/core/../layouts/lv_layout_private.h \
- ../Middlewares/lvgl_lib/src/core/../layouts/lv_layout.h \
- ../Application/print.h
+ ../Middlewares/lvgl_lib/src/core/../layouts/lv_layout.h
 ../Middlewares/lvgl_lib/src/core/lv_refr_private.h:
 ../Middlewares/lvgl_lib/src/core/lv_refr.h:
 ../Middlewares/lvgl_lib/src/core/lv_obj.h:
@@ -429,4 +428,3 @@ C:/Users/shafg/Desktop/Projects_Firmware/sensor_platform/Middlewares/lvgl_lib/lv
 ../Middlewares/lvgl_lib/src/core/../debugging/test/../../lv_conf_internal.h:
 ../Middlewares/lvgl_lib/src/core/../layouts/lv_layout_private.h:
 ../Middlewares/lvgl_lib/src/core/../layouts/lv_layout.h:
-../Application/print.h:

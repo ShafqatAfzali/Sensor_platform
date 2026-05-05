@@ -51,7 +51,7 @@ void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, Test_LED_Pin|XL_Pin|YD_Pin|SPI_RST_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, backlight_Pin|XL_Pin|YD_Pin|SPI_RST_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(SPI_DC_GPIO_Port, SPI_DC_Pin, GPIO_PIN_RESET);
@@ -65,12 +65,12 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(B1_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : Test_LED_Pin */
-  GPIO_InitStruct.Pin = Test_LED_Pin;
+  /*Configure GPIO pin : backlight_Pin */
+  GPIO_InitStruct.Pin = backlight_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(Test_LED_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(backlight_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : XL_Pin YD_Pin SPI_RST_Pin */
   GPIO_InitStruct.Pin = XL_Pin|YD_Pin|SPI_RST_Pin;

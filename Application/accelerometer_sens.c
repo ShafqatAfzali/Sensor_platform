@@ -1,10 +1,10 @@
 #include "accelerometer_sens.h"
-#include "print.h"
 #include "sens_detect.h"
 #include "controller.h"
 #include "i2c.h"
 #include "cmsis_os2.h"
 #include <stdbool.h>
+#include <string.h>
 
 #define accelometer_addr 0x1D
 uint8_t X_MSB_reg_addr=0x01;
@@ -65,40 +65,17 @@ bool I2C_accelerometer_transmit(uint8_t reg_addr, uint8_t reg_write){
 void accelerometer_config(){
 
 	//set stanby mode for config (ACTIVE bit = 0 in CTRL_REG1)
-	bool transmitted=I2C_accelerometer_transmit(CTRL_reg1_config_addr,CTRL_reg1_standby_write);
-	if(transmitted){
-		print("----------sensor is in standby---------\n");
-	}else{
-		print("\n\n standby failed \n\n");
-	}
-	osDelay(50);
+	I2C_accelerometer_transmit(CTRL_reg1_config_addr,CTRL_reg1_standby_write);
 
 	//setter range til +/- 4g
-	bool transmitted2=I2C_accelerometer_transmit(XYZ_reg_config_addr,XYZ_reg_config_write);
-	if(transmitted2){
-		print("----------sensor range set to +/-4g---------\n");
-	}else{
-		print("\n\n range set failed \n\n");
-	}
-	osDelay(50);
-
+	I2C_accelerometer_transmit(XYZ_reg_config_addr,XYZ_reg_config_write);
 
 	//setter low power mode
-	bool transmitted3=I2C_accelerometer_transmit(CTRL_reg2_config_addr,CTRL_reg2_write);
-	if(transmitted3){
-		print("---------- low power set ---------\n");
-	}else{
-		print("\n\n low power failed \n\n");
-	}
+	I2C_accelerometer_transmit(CTRL_reg2_config_addr,CTRL_reg2_write);
 	osDelay(50);
 
 	//setter tilbake til active mode
-	bool transmitted4=I2C_accelerometer_transmit(CTRL_reg1_config_addr,CTRL_reg1_active_write);
-	if(transmitted4){
-		print("---------- set to active mode ---------\n");
-	}else{
-		print("\n\n failed to set to active mode \n\n");
-	}
+	I2C_accelerometer_transmit(CTRL_reg1_config_addr,CTRL_reg1_active_write);
 	osDelay(50);
 
 }
@@ -113,7 +90,6 @@ void accelormeter_thread_func(){
 
         //aktiverer thread og tømmer flagg
 		if(this_flag & 0x04){
-			print("flag detected in accelerometer\n\n");
 			osMutexAcquire(get_i2c_mutex_id(), osWaitForever);
 			accelerometer_config();
 			osMutexRelease(get_i2c_mutex_id());
@@ -126,10 +102,6 @@ void accelormeter_thread_func(){
 			osStatus_t I2C_status = osMutexAcquire(get_i2c_mutex_id(), osWaitForever);
 
 			if(I2C_status==osOK){
-
-				//uint16_t X_axl=I2C_accelerometer_recieve(X_MSB_reg_addr,X_LSB_reg_addr);
-				//uint16_t Y_axl=I2C_accelerometer_recieve(Y_MSB_reg_addr,Y_LSB_reg_addr);
-				//uint16_t Z_axl=I2C_accelerometer_recieve(Z_MSB_reg_addr,Z_LSB_reg_addr);
 
 				//siden adressene til outupt verdiene er "consecutivde"
 				//Altså 0x01, 0x02, 0x03 og ... så kan vi lese alle på engang
@@ -154,9 +126,9 @@ void accelormeter_thread_func(){
 					Z_axl>>=2;
 
 					//omformer til mm/s^2 basert på \-4g range (2048 count gitt i datablad)
-					int32_t X_ms2 = ((int32_t)X_axl * 9810) / 2048;
-					int32_t Y_ms2 = ((int32_t)Y_axl * 9810) / 2048;
-					int32_t Z_ms2 = ((int32_t)Z_axl * 9810) / 2048;
+					int32_t X_ms2 = ((int32_t)X_axl * 9810) / (2048*1000);
+					int32_t Y_ms2 = ((int32_t)Y_axl * 9810) / (2048*1000);
+					int32_t Z_ms2 = ((int32_t)Z_axl * 9810) / (2048*1000);
 
 
 
@@ -175,19 +147,17 @@ void accelormeter_thread_func(){
 					osMessageQueuePut(sens_msg_queue_get(), &accleration_msg, 0,0);
 					osDelay(1000);
 
-					print("\n\n x= %d mm/s^2\n y= %d mm/s^2\n z= %d mm/s^2",X_ms2,Y_ms2,Z_ms2);
 				}else{
 					HAL_I2C_DeInit(&hi2c1);
 					osDelay(50);
 					HAL_I2C_Init(&hi2c1);
 					accelerometer_active=false;
 
-					osEventFlagsSet(sens_msg_queue_get(),0x08);
-
 					strcpy(accleration_msg.sens_type, "no sensor");
 					accleration_msg.sens_data = 0;
 
 					osMessageQueuePut(sens_msg_queue_get(), &accleration_msg, 0,0);
+					osEventFlagsSet(get_flag_id(),0x08);
 				}
 			}
 

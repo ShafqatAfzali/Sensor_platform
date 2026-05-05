@@ -1,4 +1,5 @@
-#include "main.h"
+/*
+ * #include "main.h"
 #include "print.h"
 #include "usart.h"
 #include <stdio.h>
@@ -18,3 +19,5 @@ void print(char *str, ...)
     uint16_t size_of_buffer=strlen(buffer);
     HAL_UART_Transmit(&huart2, (uint8_t *)buffer, size_of_buffer, HAL_MAX_DELAY);
 }
+
+*/

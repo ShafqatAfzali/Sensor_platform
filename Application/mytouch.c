@@ -3,11 +3,7 @@
 #include "adc.h"
 #include "gpio.h"
 #include "tim.h"
-#include "print.h"
 #include "controller.h"
-
-//skal bruke reading_xy til å informere om funksjonen leser x eller y
-int reading_xy;
 
 osThreadId_t touchscreen_thread_id;
 static ADC_ChannelConfTypeDef sConfig;
@@ -36,10 +32,7 @@ void set_pin_adc(int i)
     }
     sConfig.Rank = 1;
     sConfig.SamplingTime = ADC_SAMPLETIME_3CYCLES;
-    if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK){
-    	print("config feilet\n");
-    	Error_Handler();
-    }
+    HAL_ADC_ConfigChannel(&hadc1, &sConfig);
 
 }
 
@@ -120,16 +113,6 @@ void touch_reset_pins(){
 }
 
 
-uint16_t avg(uint32_t *arr){
-	uint32_t sum=0;
-	for(int i=0; i<20; i++){
-		sum+=arr[i];
-	}
-	uint16_t average=(uint16_t)(sum/20);
-	return average;
-}
-
-
 uint32_t pixel_touch_y(uint32_t milli_volt){
 	//600mV på 0 og 3300mV på 160
 	uint32_t delta_mV=milli_volt-600;
@@ -145,16 +128,14 @@ uint32_t pixel_touch_x(uint32_t milli_volt){
 	uint32_t delta_x=2700/160;
 	uint32_t touch_x=delta_mV/delta_x;
 	return touch_x;
-
 }
+
 
 
 void touchscreen_thread_func(){
 	HAL_TIM_Base_Start(&htim2);
-	print("running touch thread\n");
-	reading_xy=0;
-	while(1){
 
+	while(1){
 		//leser x verdi
 	    HAL_GPIO_DeInit(XR_GPIO_Port, XR_Pin);
 	    HAL_GPIO_DeInit(XL_GPIO_Port, XL_Pin);
@@ -179,27 +160,23 @@ void touchscreen_thread_func(){
 			osDelay(1);
 		}
 		avg_x=sum_x/20;
-		//print("avg_x: %d\n", avg_x);
-
-
 		osDelay(50);
 
 
 
 
 		//leser y verdi samme som før
+		//men bare motsatt for x og y pinnene
+
 	    HAL_GPIO_DeInit(XL_GPIO_Port, XL_Pin);
 	    HAL_GPIO_DeInit(YU_GPIO_Port, YU_Pin);
 	    HAL_GPIO_DeInit(YD_GPIO_Port, YD_Pin);
-		//men bare motsatt for x og y pinnene
-
 
 		set_pin_vcc(1); //YU VCC
 		set_pin_gnd(1); //YD GND
 		set_pin_hi_z(0); //XL NO CONNECT
 		set_pin_adc(0); //XR ADC
 		osDelay(5);
-
 
 		uint32_t avg_y=0;
 		uint32_t sum_y=0;
@@ -211,18 +188,11 @@ void touchscreen_thread_func(){
 			osDelay(1);
 		}
 		avg_y=sum_y/20;
-		//print("avg_y: %d\n", avg_y);
 
 
+		//setter touch verdiene i touch_msg objected til funnet verdier
 		touch_msg.touched_x=pixel_touch_x(avg_x);
 		touch_msg.touched_y=pixel_touch_y(avg_y);
-
-		uint32_t touched_x=pixel_touch_x(avg_x);
-		uint32_t touched_y=pixel_touch_y(avg_y);
-
-		//print("X touch: %d\n", touched_x);
-		//print("Y touch: %d\n", touched_y);
-
 
 		//sender touch data til controller
 		osMessageQueuePut(touch_msg_queue_get(), &touch_msg, 0,0);
@@ -230,11 +200,10 @@ void touchscreen_thread_func(){
 		osDelay(50);
 	}
 
-
 }
 
+
 void touchscreen_INIT(){
-	print("about to create touch thread\n");
 
     const osThreadAttr_t touchscreen_thread_attr = {
         .name = "touchscreen_thread",
@@ -243,9 +212,6 @@ void touchscreen_INIT(){
     };
 
     touchscreen_thread_id = osThreadNew(touchscreen_thread_func, NULL, &touchscreen_thread_attr);
-
-	print("created touch thread\n");
-
 
 }
 

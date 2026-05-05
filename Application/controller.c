@@ -1,8 +1,8 @@
+#include "main.h"
 #include "controller.h"
 #include "cmsis_os2.h"
 #include "display_driver.h"
 #include <string.h>
-#include "print.h"
 
 
 osMessageQueueId_t img_queue;
@@ -23,9 +23,11 @@ int display_state;
 //power mode av eller på
 int power_mode;
 
+int display_state_var;
+
 
 void controller_thread(){
-
+	HAL_GPIO_WritePin(backlight_GPIO_Port, backlight_Pin, 1);
 
 	while(1) {
 
@@ -33,31 +35,28 @@ void controller_thread(){
 		if(osMessageQueueGet(touch_queue, &controller_touch_msg, NULL, 0) == osOK){
 			//her skjer all kontrollen (ie slå av skjerm, send data)
 
-			print("X touch: %d\n", controller_touch_msg.touched_x);
-			print("Y touch: %d\n", controller_touch_msg.touched_y);
-
-			//for eksempel hvis skru av skjerm er (x:30-50 og y:20-60)
+			//for eksempel hvis skru på skjerm er (x:20-100 og y:0-40)
 			if(
 
 					controller_touch_msg.touched_x<100 &&
 					controller_touch_msg.touched_x>20 &&
 					controller_touch_msg.touched_y<40 &&
-					controller_touch_msg.touched_y>0
+					controller_touch_msg.touched_y>0 &&
+					(display_state==1)
 
 			){
-				if(display_state==1){
-					display_off();
-					display_state=0;
-				}else{
-					display_on();
-					display_state=1;
-				}
+				display_off();
+				HAL_GPIO_WritePin(backlight_GPIO_Port, backlight_Pin, 0);
+				display_state=0;
+				display_state_var=0;
+
 				//antar at sens data knappen er (x:70-90 og y:20-60)
 			}else if(
 					controller_touch_msg.touched_x<100 &&
 					controller_touch_msg.touched_x>20 &&
 					controller_touch_msg.touched_y<80 &&
-					controller_touch_msg.touched_y>40
+					controller_touch_msg.touched_y>40 &&
+					(display_state==1)
 			){
 				if(display_data==1){
 					display_data=0;
@@ -68,28 +67,58 @@ void controller_thread(){
 
 
 
+
+			//slår på display hvis det er av
+			if(
+
+					controller_touch_msg.touched_x<110 &&
+					controller_touch_msg.touched_x>10 &&
+					controller_touch_msg.touched_y<130 &&
+					controller_touch_msg.touched_y>20 &&
+					(display_state==0)
+
+			){
+				display_state_var+=1;
+				if(display_state_var==2){
+					display_on();
+					HAL_GPIO_WritePin(backlight_GPIO_Port, backlight_Pin, 1);
+					display_state=1;
+				}
+			}
+
 		}
+
+
+
+
+
+
 
 		if(display_data==1){
 
 			if(osMessageQueueGet(sensor_queue, &controller_sens_msg, NULL, 0) == osOK){
 
-				strcpy(controller_img_msg.sens_type, controller_sens_msg.sens_type);
+				if(strcmp(controller_sens_msg.sens_type,"no sensor")==0){
 
-				controller_img_msg.sens_data=controller_sens_msg.sens_data;
-				controller_img_msg.touched_x = controller_touch_msg.touched_x;
-				controller_img_msg.touched_y = controller_touch_msg.touched_y;
-				osMessageQueuePut(img_queue, &controller_img_msg, 0,0);
+					strcpy(controller_img_msg.img_showing, "Active");
+					strcpy(controller_img_msg.sens_type, "Disconnected");
+					controller_img_msg.sens_data=(uint16_t)0;
+					osMessageQueuePut(img_queue, &controller_img_msg, 0,0);
+				}else{
 
-
+					strcpy(controller_img_msg.img_showing, "Active");
+					strcpy(controller_img_msg.sens_type, controller_sens_msg.sens_type);
+					controller_img_msg.sens_data=controller_sens_msg.sens_data;
+					osMessageQueuePut(img_queue, &controller_img_msg, 0,0);
+				}
 			}
+
 
 		}else{
 
-			strcpy(controller_img_msg.sens_type, "Not Displaying");
-			controller_sens_msg.sens_data=0;
-			controller_img_msg.touched_x = controller_touch_msg.touched_x;
-			controller_img_msg.touched_y = controller_touch_msg.touched_y;
+			strcpy(controller_img_msg.img_showing, "press show data");
+			strcpy(controller_img_msg.sens_type, "NAN");
+			controller_sens_msg.sens_data=(uint16_t)0;
 
 			osMessageQueuePut(img_queue, &controller_img_msg, 0,0);
 

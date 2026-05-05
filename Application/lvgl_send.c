@@ -1,6 +1,5 @@
 #include "lvgl_send.h"
 #include "lvgl.h"
-#include "print.h"
 #include "controller.h"
 #include <stdio.h>
 #include <string.h>
@@ -34,7 +33,6 @@ void my_flush_cb(lv_display_t * disp, const lv_area_t * area, uint8_t * px_buf)
 
 	display_set_img(&img_to_send);
     lv_display_flush_ready(disp);
-	//print("flushed\n");
 	osDelay(1);
 
 }
@@ -64,7 +62,7 @@ void lvgl_thread(){
 	lv_obj_align(sensor_label, LV_ALIGN_TOP_MID, 0, 110);
 
 	lv_obj_t * sensor_value = lv_label_create(lv_screen_active());
-	lv_label_set_text(sensor_value, "NA");
+	lv_label_set_text(sensor_value, "------");
 	lv_obj_align(sensor_value, LV_ALIGN_TOP_MID, 0, 130);
 
 
@@ -82,7 +80,7 @@ void lvgl_thread(){
 
 	label = lv_label_create(btn1);
 	lv_label_set_text(label, "Screen off");
-	lv_obj_set_style_text_color(label, lv_color_hex(0xFFFFFF), LV_PART_MAIN);
+	lv_obj_set_style_text_color(label, lv_color_hex(0x000000), LV_PART_MAIN);
 	lv_obj_center(label);
 
 
@@ -92,7 +90,7 @@ void lvgl_thread(){
 	lv_obj_set_size(btn2, 80, 40);
 	lv_obj_align(btn2, LV_ALIGN_TOP_MID, 0, 40);
 
-	lv_obj_set_style_bg_color(btn2, lv_color_hex(0x030c00), LV_PART_MAIN);
+	lv_obj_set_style_bg_color(btn2, lv_color_hex(0x015bb0), LV_PART_MAIN);
 	lv_obj_set_style_bg_opa(btn2, LV_OPA_COVER, LV_PART_MAIN);
 
 
@@ -101,31 +99,19 @@ void lvgl_thread(){
 	lv_obj_set_style_text_color(label2, lv_color_hex(0xFFFFFF), LV_PART_MAIN);
 	lv_obj_center(label2);
 
-	//print("kjører lvgl nå\n");
-
 	while(1){
         lv_timer_handler();
 
     	if(osMessageQueueGet(img_msg_queue_get(), &update_img_obj, NULL, 0) == osOK) {
-    		//print("fikk sensor data\n");
 
-
+            lv_label_set_text(function_label, update_img_obj.img_showing);
 
             lv_label_set_text(sensor_label, update_img_obj.sens_type);
 
-            if(strcmp(update_img_obj.sens_type, "no sensor") == 0){
-        		char buf[32]="NAN";
-        		lv_label_set_text(sensor_value, buf);
-        	}else if(strcmp(update_img_obj.sens_type, "Not Displaying") == 0){
-        		char buf1[32]="-----";
-        		lv_label_set_text(function_label, buf1);
-
-        		char buf[32]="NAN";
+            if((strcmp(update_img_obj.sens_type, "Disconnected") == 0) | ((strcmp(update_img_obj.sens_type, "NAN") == 0))){
+        		char buf[32]="------";
         		lv_label_set_text(sensor_value, buf);
         	}else{
-        		char buf1[32]="showing";
-        		lv_label_set_text(function_label, buf1);
-
         		char buf[32];
         		snprintf(buf, sizeof(buf), "%.1f", (float)update_img_obj.sens_data);
         		lv_label_set_text(sensor_value, buf);

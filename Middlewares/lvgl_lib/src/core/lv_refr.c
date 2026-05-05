@@ -23,7 +23,6 @@
 #include "../draw/lv_draw_private.h"
 #include "../stdlib/lv_string.h"
 #include "lv_global.h"
-#include "print.h"
 /*********************
  *      DEFINES
  *********************/
@@ -394,7 +393,6 @@ void lv_display_refr_timer(lv_timer_t * tmr)
     }
 
     lv_result_t res = lv_display_send_event(disp_refr, LV_EVENT_REFR_START, NULL);
-    print("lv_result_t res set\n");
     if(res == LV_RESULT_INVALID) {
         LV_TRACE_REFR("deleted");
         LV_PROFILER_REFR_END;

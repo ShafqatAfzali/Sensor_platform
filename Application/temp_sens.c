@@ -1,5 +1,4 @@
 #include "temp_sens.h"
-#include "print.h"
 #include "sens_detect.h"
 #include "controller.h"
 #include "i2c.h"
@@ -26,24 +25,10 @@ void temp_config(){
     uint8_t status_byte = 0;
 
     // Send command to read status
-    temp_sen_status = HAL_I2C_Master_Transmit(&hi2c1, temp_sen_addr << 1, &status_var, 1, 200);
-
-    if(temp_sen_status != HAL_OK){
-        print("status command trans failed\n");
-    }
+    HAL_I2C_Master_Transmit(&hi2c1, temp_sen_addr << 1, &status_var, 1, 200);
 
     // leser status
-    temp_sen_status = HAL_I2C_Master_Receive(&hi2c1, temp_sen_addr << 1, &status_byte, 1, 200);
-
-    if(temp_sen_status == HAL_OK){
-        if(status_byte == exp_temp_sen_status){
-            print("no config needed\n");
-        } else {
-            print("config & kalibrer\n");
-        }
-    } else {
-        print("sensor status recieve failed");
-    }
+    HAL_I2C_Master_Receive(&hi2c1, temp_sen_addr << 1, &status_byte, 1, 200);
 
 };
 
@@ -97,17 +82,17 @@ void temp_thread_func(){
 
 					osMessageQueuePut(sens_msg_queue_get(), &temp_msg, 0,0);
 			    }else{
-					print("I2C transmitt failed for temp\n");
 					//samme som i de andre sensor threads
 					HAL_I2C_DeInit(&hi2c1);
 					osDelay(50);
 					HAL_I2C_Init(&hi2c1);
-					osEventFlagsSet(get_flag_id(), 0x08);
 					temp_sens_active=false;
 
 					strcpy(temp_msg.sens_type, "no sensor");
 					temp_msg.sens_data = 0;
 					osMessageQueuePut(sens_msg_queue_get(), &temp_msg, 0,0);
+
+					osEventFlagsSet(get_flag_id(), 0x08);
 			    }
 
 			}

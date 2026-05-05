@@ -1,6 +1,5 @@
 Application/temp_sens.o: ../Application/temp_sens.c \
- ../Application/temp_sens.h ../Application/print.h \
- ../Application/sens_detect.h \
+ ../Application/temp_sens.h ../Application/sens_detect.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h \
  ../Application/controller.h ../Core/Inc/main.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h \
@@ -39,7 +38,6 @@ Application/temp_sens.o: ../Application/temp_sens.c \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h \
  ../Core/Inc/i2c.h ../Core/Inc/main.h
 ../Application/temp_sens.h:
-../Application/print.h:
 ../Application/sens_detect.h:
 ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h:
 ../Application/controller.h:

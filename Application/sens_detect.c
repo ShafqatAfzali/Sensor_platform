@@ -1,6 +1,5 @@
 #include "main.h"
 #include "sens_detect.h"
-#include "print.h"
 #include "i2c.h"
 #include "cmsis_os2.h"
 #include "light_sens.h"
@@ -19,7 +18,7 @@ static sensor_arr sens_obj_arr[3]={
 		{"light sensor", 0x10,0x02},
 		{"accelerometer", 0x1D,0x04}};
 
-#define searching_flagg 0x8
+#define searching_flagg 0x08
 
 HAL_StatusTypeDef detected_status;
 osThreadId_t detect_thread_id;
@@ -30,7 +29,6 @@ bool sens_detection_state;
 
 
 void detect_thread_func(){
-	print("in detect_thread_func\n");
 	while(true){
 		//får flagget, i første runde spiller dette ikke noe rolle
         uint32_t detect_flag = osEventFlagsGet(sensors_flag_id);
@@ -85,7 +83,6 @@ void detect_INIT(){
     sensors_flag_id = osEventFlagsNew(NULL);
 
     I2C_mutex_id = osMutexNew(NULL);
-    print("about to create sensor detection thread\n");
 
     const osThreadAttr_t detect_thread_attr = {
         .name = "sensor_detection_thread",
@@ -93,11 +90,8 @@ void detect_INIT(){
         .priority = osPriorityNormal,
     };
 
-    detect_thread_id = osThreadNew(detect_thread_func, NULL, &detect_thread_attr);
+    osThreadNew(detect_thread_func, NULL, &detect_thread_attr);
 
-    if(detect_thread_id==HAL_OK){
-    	print("sensor detection thread created\n");
-    }
 }
 
 osEventFlagsId_t get_flag_id() {

@@ -65,8 +65,8 @@ void Error_Handler(void);
 #define YU_GPIO_Port GPIOA
 #define USART_TX_Pin GPIO_PIN_2
 #define USART_TX_GPIO_Port GPIOA
-#define Test_LED_Pin GPIO_PIN_5
-#define Test_LED_GPIO_Port GPIOA
+#define backlight_Pin GPIO_PIN_5
+#define backlight_GPIO_Port GPIOA
 #define XL_Pin GPIO_PIN_6
 #define XL_GPIO_Port GPIOA
 #define YD_Pin GPIO_PIN_7

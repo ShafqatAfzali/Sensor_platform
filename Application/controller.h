@@ -5,17 +5,15 @@
 
 
 typedef struct{
-	//which sensor that was just plugged in (ie which sensor was detected)
-	//if a sensor is disconnected, it sends "no sensor"
+	//top text label (ie showing if displaying data, Not displaying if data not shown)
+	char img_showing[100];
+
+	//which sensor is connected
 	char sens_type[100];
 	//the sensors current data
 	//if a sensor is disconnected, it sends 0
 	// for Accelerometer, it sends x-axis acceleration, then y-axis, then z axis and then loops over it (ie x->y->z->x->y->z......)
 	uint32_t sens_data;
-	//the touched pixel on the y-axis
-	uint32_t touched_y;
-	//the touched pixel on the y-axis
-	uint32_t touched_x;
 } update_image_obj;
 
 

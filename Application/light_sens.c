@@ -1,5 +1,4 @@
 #include "light_sens.h"
-#include "print.h"
 #include "sens_detect.h"
 #include "controller.h"
 #include "i2c.h"
@@ -49,13 +48,7 @@ void light_sens_config(){
 		sens_config_write & 0xFF         // LSB av config
 	};
 	size_t transmit_size = sizeof(config_write);
-	config_transmit_status=HAL_I2C_Master_Transmit(&hi2c1, sens_slave_addr<< 1, config_write, transmit_size, 200);
-	if(config_transmit_status==HAL_OK){
-		print("transmitted config\n");
-	}else{
-		print("\n\n transmit config failed \n\n");
-
-	}
+	HAL_I2C_Master_Transmit(&hi2c1, sens_slave_addr<< 1, config_write, transmit_size, 200);
 	osDelay(1000);
 
 	//aktiverere power saving mode med mode 00 (8uA)
@@ -66,13 +59,7 @@ void light_sens_config(){
 	};
 
 	size_t transmit_PSM_size = sizeof(config_PSM_write);
-	config_transmit_status=HAL_I2C_Master_Transmit(&hi2c1, sens_slave_addr<< 1, config_PSM_write, transmit_PSM_size, 200);
-	if(config_transmit_status==HAL_OK){
-		print("transmitted PSM config\n");
-	}else{
-		print("\n\n transmit PSM config failed \n\n");
-
-	}
+	HAL_I2C_Master_Transmit(&hi2c1, sens_slave_addr<< 1, config_PSM_write, transmit_PSM_size, 200);
 	osDelay(1000);
 
 
@@ -100,7 +87,7 @@ void light_sens_thread_func(){
 			osStatus_t I2C_status = osMutexAcquire(get_i2c_mutex_id(), osWaitForever);
 
 			if(I2C_status==osOK){
-				print("\nlight sensor recieved mutex");
+
 				uint8_t rx_buffer[2];  // buffer for output dataen
 				//leser verdier med mem_read siden det er enklere og for å lese må vi ha repeated start etter transmitt
 				transmit_status = HAL_I2C_Mem_Read(&hi2c1, sens_slave_addr << 1, sens__HighRes_output_reg_addr, I2C_MEMADD_SIZE_8BIT, rx_buffer, 2, 200);
@@ -108,20 +95,16 @@ void light_sens_thread_func(){
 				if (transmit_status == HAL_OK) {
 					light_sens_output = (rx_buffer[1] << 8) | rx_buffer[0];
 					uint32_t output_mlux = (light_sens_output * 168) / 10;
-					print("iluminance: %d mLux\n", output_mlux);
-
 
 					strcpy(msg.sens_type, "light");
 					msg.sens_data= output_mlux;
 
 					osMessageQueuePut(sens_msg_queue_get(), &msg, 0,0);
 				} else {
-					print("I2C receive failed\n");
 					//aktiverer detekajon og deaktiverer thread while loop
 					HAL_I2C_DeInit(&hi2c1);
 					osDelay(50);
 					HAL_I2C_Init(&hi2c1);
-					osEventFlagsSet(get_flag_id(), 0x08);
 					light_sens_active=false;
 
 
@@ -130,9 +113,11 @@ void light_sens_thread_func(){
 
 					osMessageQueuePut(sens_msg_queue_get(), &msg, 0,0);
 
+					osEventFlagsSet(get_flag_id(), 0x08);
+
 				}
 
-			}else{print("\n light sensor didnt recieve mutex");}
+			}
 
 		    osMutexRelease(get_i2c_mutex_id());
 
