@@ -14,10 +14,6 @@
 #include "controller.h"
 #include "cmsis_os2.h"
 
-void Idle_Thread_Func(){
-
-}
-
 void myapp(){
 	lvgl_thread_INIT();
     detect_INIT();
@@ -26,11 +22,6 @@ void myapp(){
     temp_sens_INIT();
     touchscreen_INIT();
     controller_INIT();
-
-    osThreadAttr_t idle_spes = {};
-    idle_spes.name="idle_thread";
-    idle_spes.priority=osPriorityIdle;
-    osThreadNew(Idle_Thread_Func, NULL, &idle_spes);
 
 }
 

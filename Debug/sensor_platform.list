@@ -3675,10 +3675,10 @@ void lvgl_thread_INIT(){
  8001f40:	08001ee1 	.word	0x08001ee1
 
 08001f44 <myapp>:
+#include "lvgl_send.h"
 #include "mytouch.h"
 #include "controller.h"
-
-
+#include "cmsis_os2.h"
 
 void myapp(){
  8001f44:	b580      	push	{r7, lr}
@@ -3697,6 +3697,7 @@ void myapp(){
  8001f5c:	f000 f9c4 	bl	80022e8 <touchscreen_INIT>
     controller_INIT();
  8001f60:	f7ff fae2 	bl	8001528 <controller_INIT>
+
 }
  8001f64:	bf00      	nop
  8001f66:	bd80      	pop	{r7, pc}
