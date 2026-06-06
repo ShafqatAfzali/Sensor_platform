@@ -1,4 +1,4 @@
-../Application/lvgl_send.c:14:6:my_flush_cb	2
-../Application/lvgl_send.c:46:6:lvgl_thread	3
-../Application/lvgl_send.c:129:6:lv_tick_thread	1
-../Application/lvgl_send.c:137:6:lvgl_thread_INIT	1
+../Application/lvgl_send.c:15:6:my_flush_cb	2
+../Application/lvgl_send.c:47:6:lvgl_thread	3
+../Application/lvgl_send.c:156:6:lv_tick_thread	1
+../Application/lvgl_send.c:164:6:lvgl_thread_INIT	1

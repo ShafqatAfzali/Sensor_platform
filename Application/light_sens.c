@@ -5,6 +5,7 @@
 #include "cmsis_os2.h"
 #include <stdbool.h>
 #include <string.h>
+#include "mywatchdog.h"
 
 //0x20 for write
 //0x21 for read
@@ -69,6 +70,7 @@ void light_sens_config(){
 void light_sens_thread_func(){
 
 	while(true){
+		osEventFlagsSet(get_watchdog_flag(),watchdog_light_flag);
 		//får flagget
         uint32_t this_flag = osEventFlagsGet(get_flag_id());
 
@@ -96,7 +98,7 @@ void light_sens_thread_func(){
 					light_sens_output = (rx_buffer[1] << 8) | rx_buffer[0];
 					uint32_t output_mlux = (light_sens_output * 168) / 10;
 
-					strcpy(msg.sens_type, "light");
+					strcpy(msg.sens_type, "light [mlux]");
 					msg.sens_data= output_mlux;
 
 					osMessageQueuePut(sens_msg_queue_get(), &msg, 0,0);
@@ -123,7 +125,7 @@ void light_sens_thread_func(){
 
 		}
 
-		osDelay(2000);
+		osDelay(200);
 	}
 };
 

@@ -5,6 +5,7 @@
 #include "cmsis_os2.h"
 #include <stdbool.h>
 #include <string.h>
+#include "mywatchdog.h"
 
 #define accelometer_addr 0x1D
 uint8_t X_MSB_reg_addr=0x01;
@@ -84,6 +85,7 @@ void accelerometer_config(){
 
 void accelormeter_thread_func(){
 	while(true){
+		osEventFlagsSet(get_watchdog_flag(),watchdog_accelerometer_flag);
 
 		//får flagget
         uint32_t this_flag = osEventFlagsGet(get_flag_id());
@@ -162,7 +164,7 @@ void accelormeter_thread_func(){
 			}
 
 			osMutexRelease(get_i2c_mutex_id());
-			osDelay(2000);
+			osDelay(1000);
 		}
 
 

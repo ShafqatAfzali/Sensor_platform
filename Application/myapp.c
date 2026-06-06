@@ -13,6 +13,7 @@
 #include "mytouch.h"
 #include "controller.h"
 #include "cmsis_os2.h"
+#include "mywatchdog.h"
 
 void myapp(){
 	lvgl_thread_INIT();
@@ -22,7 +23,7 @@ void myapp(){
     temp_sens_INIT();
     touchscreen_INIT();
     controller_INIT();
-
+    watchdog_INIT();
 }
 
 

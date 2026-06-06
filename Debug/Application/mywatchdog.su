@@ -1,0 +1,3 @@
+../Application/mywatchdog.c:9:6:watchdog_thread	16	static
+../Application/mywatchdog.c:29:6:watchdog_INIT	48	static
+../Application/mywatchdog.c:43:18:get_watchdog_flag	4	static

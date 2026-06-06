@@ -3,6 +3,7 @@
 #include "controller.h"
 #include <stdio.h>
 #include <string.h>
+#include "mywatchdog.h"
 
 uint8_t imgbuff[total_display_bytes/5];
 
@@ -17,7 +18,7 @@ void my_flush_cb(lv_display_t * disp, const lv_area_t * area, uint8_t * px_buf)
     uint32_t px_count = (area->x2 - area->x1 + 1) *
                         (area->y2 - area->y1 + 1);
 
-    // swap bytes
+    // omformer bytes (byte0 <--> byte1) på grunn av hvordan skjermen vil ha pixel data
     for(uint32_t i = 0; i < px_count * 2; i += 2) {
         uint8_t tmp = px_buf[i];
         px_buf[i] = px_buf[i+1];
@@ -72,25 +73,25 @@ void lvgl_thread(){
     lv_obj_t * label;
 	lv_obj_t * btn1 = lv_button_create(lv_screen_active());
 	lv_obj_remove_style_all(btn1);
-	lv_obj_set_size(btn1, 80, 40);
-	lv_obj_align(btn1, LV_ALIGN_TOP_MID, 0, 0);
+	lv_obj_set_size(btn1, 90, 38);
+	lv_obj_align(btn1, LV_ALIGN_TOP_RIGHT, -2, 2);
 
-	lv_obj_set_style_bg_color(btn1, lv_color_hex(0x03fc17), LV_PART_MAIN);
+	lv_obj_set_style_bg_color(btn1, lv_color_hex(0xff0000), LV_PART_MAIN);
 	lv_obj_set_style_bg_opa(btn1, LV_OPA_COVER, LV_PART_MAIN);
 
 	label = lv_label_create(btn1);
 	lv_label_set_text(label, "Screen off");
-	lv_obj_set_style_text_color(label, lv_color_hex(0x000000), LV_PART_MAIN);
+	lv_obj_set_style_text_color(label, lv_color_hex(0xFFFFFF), LV_PART_MAIN);
 	lv_obj_center(label);
 
 
     lv_obj_t * label2;
 	lv_obj_t * btn2 = lv_button_create(lv_screen_active());
 	lv_obj_remove_style_all(btn2);
-	lv_obj_set_size(btn2, 80, 40);
-	lv_obj_align(btn2, LV_ALIGN_TOP_MID, 0, 40);
+	lv_obj_set_size(btn2, 90, 38);
+	lv_obj_align(btn2, LV_ALIGN_TOP_RIGHT, -2, 42);
 
-	lv_obj_set_style_bg_color(btn2, lv_color_hex(0x015bb0), LV_PART_MAIN);
+	lv_obj_set_style_bg_color(btn2, lv_color_hex(0x1427d9), LV_PART_MAIN);
 	lv_obj_set_style_bg_opa(btn2, LV_OPA_COVER, LV_PART_MAIN);
 
 
@@ -99,7 +100,30 @@ void lvgl_thread(){
 	lv_obj_set_style_text_color(label2, lv_color_hex(0xFFFFFF), LV_PART_MAIN);
 	lv_obj_center(label2);
 
+
+
+    // Vertical sensor bar
+    lv_obj_t * sensor_bar = lv_bar_create(lv_screen_active());
+    // size: width=30px, height=80px
+    lv_obj_set_size(sensor_bar, 30, 80);
+    // place to the LEFT of buttons (top right area)
+    lv_obj_align(sensor_bar, LV_ALIGN_TOP_RIGHT, -100, 0);
+    // range 0 -> 80
+    lv_bar_set_range(sensor_bar, 0, 80);
+    // initial value
+    lv_bar_set_value(sensor_bar, 0, LV_ANIM_OFF);
+    // make bar vertical
+    lv_obj_set_style_bg_color(sensor_bar, lv_color_hex(0x1427d9), LV_PART_MAIN);
+    // indicator color
+    lv_obj_set_style_bg_color(sensor_bar, lv_color_hex(0x010b0b), LV_PART_INDICATOR);
+    // optional rounded corners
+    lv_obj_set_style_radius(sensor_bar, 0, LV_PART_MAIN);
+    lv_obj_set_style_radius(sensor_bar, 0, LV_PART_INDICATOR);
+
+
 	while(1){
+		osEventFlagsSet(get_watchdog_flag(),watchdog_lvgl_flag);
+
         lv_timer_handler();
 
     	if(osMessageQueueGet(img_msg_queue_get(), &update_img_obj, NULL, 0) == osOK) {
@@ -107,6 +131,9 @@ void lvgl_thread(){
             lv_label_set_text(function_label, update_img_obj.img_showing);
 
             lv_label_set_text(sensor_label, update_img_obj.sens_type);
+
+    		//oppdaterer vertikal bar
+    		lv_bar_set_value(sensor_bar, update_img_obj.percent,LV_ANIM_ON);
 
             if((strcmp(update_img_obj.sens_type, "Disconnected") == 0) | ((strcmp(update_img_obj.sens_type, "NAN") == 0))){
         		char buf[32]="------";

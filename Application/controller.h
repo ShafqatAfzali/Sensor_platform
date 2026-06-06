@@ -14,6 +14,8 @@ typedef struct{
 	//if a sensor is disconnected, it sends 0
 	// for Accelerometer, it sends x-axis acceleration, then y-axis, then z axis and then loops over it (ie x->y->z->x->y->z......)
 	uint32_t sens_data;
+	//prosent av maximal sensor data
+	uint32_t percent;
 } update_image_obj;
 
 

@@ -6,6 +6,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include <float.h>
+#include "mywatchdog.h"
 
 #define temp_sen_addr 0x38
 #define temp_sen_status_addr 0x71
@@ -35,6 +36,7 @@ void temp_config(){
 void temp_thread_func(){
 
 	while(1){
+		osEventFlagsSet(get_watchdog_flag(),watchdog_temp_flag);
 
         uint32_t this_flag = osEventFlagsGet(get_flag_id());
         //aktiverer thread og sensor og tømmer flagg
@@ -59,15 +61,14 @@ void temp_thread_func(){
 				    osDelay(90);
 
 				    //leser registeret, første 5X8bit humidity og temp data
-				    //data[5] crc, sjekker hvis nødvendig
+				    //data[0] crc, sjekker hvis nødvendig
 				    uint8_t data[6] = {0};
 				    HAL_I2C_Master_Receive(&hi2c1, temp_sen_addr << 1, data, 6, 200);
 
-				    // tar Humidity bits, tilsvarer: bit 19-12 OR bit 11-4 OR bit 3-0
-				    uint32_t humid_bits = ((uint32_t)data[0] << 12) | ((uint32_t)data[1] << 4) | ((uint32_t)data[2] >> 4);
-
+				    // tar Humidity bits, tilsvarer: frame 2, 12 bit til venstre, frame 2, 4 bit til venstre, frame 3, 4 bit til venstre
+				    uint32_t humid_bits = ((uint32_t)data[1] << 12) | ((uint32_t)data[2] << 4)  | ((uint32_t)data[3] >> 4);
 				    //på samme måte for temp: bit 19-16 OR bit 15-8 OR bit 7-0
-				    uint32_t temp_bits = (((uint32_t)data[2] & 0x0F) << 16) | ((uint32_t)data[3] << 8) | data[4];
+				    uint32_t temp_bits = (((uint32_t)data[3] & 0x0F) << 16) | ((uint32_t)data[4] << 8) | data[5];
 
 
 				    //kjører formler fra datablad for humid mellom 0-100%
@@ -75,12 +76,25 @@ void temp_thread_func(){
 				    //kjører formler fra datablad for temp mellom -50 til 150 grad (celsius)
 				    float temperature = ((float)temp_bits / (1 << 20)) * 200.0f - 50.0f;
 
-				    //might use himidity later if i want
-					strcpy(temp_msg.sens_type, "temperature");
+
+			    	//sender temperatur
+					strcpy(temp_msg.sens_type, "temperature [C]");
 					//for å beholde desimalene ganger med 100
-					temp_msg.sens_data = (int32_t)(temperature*100);
+					temp_msg.sens_data = (int32_t)(temperature);
 
 					osMessageQueuePut(sens_msg_queue_get(), &temp_msg, 0,0);
+					osDelay(1000);
+
+
+				    //sender pressure
+					strcpy(temp_msg.sens_type, "humidity [%]");
+					//for å beholde desimalene ganger med 100
+					temp_msg.sens_data = (int32_t)(humidity);
+
+					osMessageQueuePut(sens_msg_queue_get(), &temp_msg, 0,0);
+					osDelay(1000);
+
+
 			    }else{
 					//samme som i de andre sensor threads
 					HAL_I2C_DeInit(&hi2c1);

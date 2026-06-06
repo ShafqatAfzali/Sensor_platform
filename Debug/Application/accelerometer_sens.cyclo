@@ -1,4 +1,4 @@
-../Application/accelerometer_sens.c:48:6:I2C_accelerometer_transmit	2
-../Application/accelerometer_sens.c:65:6:accelerometer_config	1
-../Application/accelerometer_sens.c:85:6:accelormeter_thread_func	5
-../Application/accelerometer_sens.c:173:6:accelerometer_INIT	1
+../Application/accelerometer_sens.c:49:6:I2C_accelerometer_transmit	2
+../Application/accelerometer_sens.c:66:6:accelerometer_config	1
+../Application/accelerometer_sens.c:86:6:accelormeter_thread_func	5
+../Application/accelerometer_sens.c:175:6:accelerometer_INIT	1

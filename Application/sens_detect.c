@@ -4,6 +4,7 @@
 #include "cmsis_os2.h"
 #include "light_sens.h"
 #include <stdbool.h>
+#include "mywatchdog.h"
 
 
 typedef struct{
@@ -30,6 +31,8 @@ bool sens_detection_state;
 
 void detect_thread_func(){
 	while(true){
+		osEventFlagsSet(get_watchdog_flag(),watchdog_sensdetect_flag);
+
 		//får flagget, i første runde spiller dette ikke noe rolle
         uint32_t detect_flag = osEventFlagsGet(sensors_flag_id);
 
@@ -39,14 +42,14 @@ void detect_thread_func(){
             osEventFlagsClear(sensors_flag_id, searching_flagg);
 		}
 
-		//hvis ingen sensor thread aktivert kjører deteksjon
-		//sjekker om i2c blir brukt via mutex
-		mutex_status = osMutexAcquire(I2C_mutex_id, osWaitForever);
+		if(sens_detection_state){
+			//hvis ingen sensor thread aktivert kjører deteksjon
+			//sjekker om i2c blir brukt via mutex
+			mutex_status = osMutexAcquire(I2C_mutex_id, osWaitForever);
 
-		if(mutex_status == osOK){
+			if(mutex_status == osOK){
 
-			for (int i=0; i<3; i++){
-				if(sens_detection_state){
+				for (int i=0; i<3; i++){
 					//sjekker sensor status
 					detected_status = HAL_I2C_IsDeviceReady(&hi2c1, sens_obj_arr[i].sensor_addr << 1, 2, 100);
 						//hvis aktivert, setter flagg, deaktiverer deteksjon og slipper semafor
@@ -62,13 +65,14 @@ void detect_thread_func(){
 						    osDelay(50);
 						    HAL_I2C_Init(&hi2c1);
 						}
-
-					osDelay(200);
+						osDelay(200);
 				}
 
 			}
+
+			osMutexRelease(I2C_mutex_id);
 		}
-		osMutexRelease(I2C_mutex_id);
+
 		osDelay(200);
 
 	}

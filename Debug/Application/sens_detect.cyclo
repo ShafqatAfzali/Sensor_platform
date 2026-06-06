@@ -1,4 +1,4 @@
-../Application/sens_detect.c:31:6:detect_thread_func	6
-../Application/sens_detect.c:78:6:detect_INIT	1
-../Application/sens_detect.c:97:18:get_flag_id	1
-../Application/sens_detect.c:101:13:get_i2c_mutex_id	1
+../Application/sens_detect.c:32:6:detect_thread_func	6
+../Application/sens_detect.c:82:6:detect_INIT	1
+../Application/sens_detect.c:101:18:get_flag_id	1
+../Application/sens_detect.c:105:13:get_i2c_mutex_id	1
